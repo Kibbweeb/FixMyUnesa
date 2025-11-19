@@ -16,7 +16,6 @@ go run main.go
 Setup .env file based on the provided .env.example file.
 
 ## Database Setup
-Before running the application, please setup your PostgreSQL database with the following schema:
 Setup the users table in your PostgreSQL database using the following SQL commands:
 
 ```sql
