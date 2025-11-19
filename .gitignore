@@ -1,0 +1,33 @@
+# ----------------------------
+# FRONTEND IGNORE
+# ----------------------------
+Frontend/node_modules/
+Frontend/dist/
+Frontend/dist-ssr/
+Frontend/.local
+Frontend/*.log
+
+# Editor & IDE (Frontend)
+Frontend/.vscode/*
+!Frontend/.vscode/extensions.json
+
+# ----------------------------
+# BACKEND IGNORE
+# ----------------------------
+Backend/.env
+
+# ----------------------------
+# SHARED / GLOBAL IGNORE
+# ----------------------------
+*.env
+*.env.local
+
+# OS / System Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.sln
+*.suo
