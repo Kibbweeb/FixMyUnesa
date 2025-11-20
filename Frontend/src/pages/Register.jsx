@@ -21,7 +21,7 @@ export default function Register() {
     setMessage("Loading...");
 
     try {
-      const res = await fetch("http://localhost:8080/signup", {
+      const res = await fetch("http://localhost:8080/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
