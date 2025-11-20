@@ -37,6 +37,7 @@ func main() {
 	admin := public.Group("/admin")
 
 	user.Use(middlewares.AuthMiddleware())
+	admin.Use(middlewares.AuthMiddleware())
 	admin.Use(middlewares.AdminMiddleware())
 
 	router.GET("/ping", func(c *gin.Context) {
