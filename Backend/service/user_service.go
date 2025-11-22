@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"Project1/models"
@@ -6,6 +6,7 @@ import (
     "errors"
 
 	"golang.org/x/crypto/bcrypt"
+    "github.com/go-pg/pg/v10"
 )
 
 type UserService struct {
@@ -43,8 +44,12 @@ func (s *UserService) SignIn(req models.SignInRequest) (*models.User, error) {
     user, err := s.Repo.GetUserByEmail(req.Email)
     
     if err != nil {
+    if err == pg.ErrNoRows {
         return nil, errors.New("email tidak ditemukan")
     }
+    return nil, errors.New("database error")
+}
+
 
     if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
         return nil, errors.New("password salah")

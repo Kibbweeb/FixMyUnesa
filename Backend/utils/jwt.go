@@ -7,9 +7,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateJWT(username string, role string) (string, error) {
+func GenerateJWT(id int64, username string, role string) (string, error) {
 	key := []byte(os.Getenv("SECRET"))
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":       id,
 		"username": username,
 		"role":     role,
 		"exp":      time.Now().Add(time.Hour * 1).Unix(),

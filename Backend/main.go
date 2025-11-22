@@ -40,12 +40,6 @@ func main() {
 	admin.Use(middlewares.AuthMiddleware())
 	admin.Use(middlewares.AdminMiddleware())
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
 	public.POST("/signup", authHandler.SignUpHandler)
 	public.POST("/signin", authHandler.SignInHandler)
 

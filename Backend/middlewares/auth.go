@@ -26,6 +26,12 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		if len(splits) < 2 {
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token missing"})
+            ctx.Abort()
+            return
+        }
+
 		tokenString := splits[1]
 
 		token, err := utils.ValidateToken(tokenString)
@@ -37,9 +43,11 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		claims := token.Claims.(jwt.MapClaims)
 
+		id := int64(claims["id"].(float64))
 		username := claims["username"].(string)
 		role := claims["role"].(string)
 
+		ctx.Set("id", id)
 		ctx.Set("username", username)
 		ctx.Set("role", role)
 

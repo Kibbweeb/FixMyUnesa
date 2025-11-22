@@ -64,14 +64,25 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 
 	user, err := h.UserService.SignIn(req)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
 
-	token, err := utils.GenerateJWT(user.Name, user.Role)
+	token, err := utils.GenerateJWT(user.Id, user.Name, user.Role)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "SignIn berhasil", "token": token})
+	
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "SignIn berhasil",
+		"data": gin.H{
+			"id":    user.Id,
+			"name":  user.Name,
+			"email": user.Email,
+			"role":  user.Role,
+			"token": token,
+		},
+	})
 }
