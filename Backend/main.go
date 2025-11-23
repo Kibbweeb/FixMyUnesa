@@ -9,8 +9,6 @@ import (
 	"Project1/repository"
 	svc "Project1/service"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,12 +19,10 @@ func main() {
 	defer db.Close()
 
 	router := gin.Default()
-	store := cookie.NewStore([]byte("secret123"))
-	router.Use(sessions.Sessions("mysession", store))
 
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 
-	router.Use(config.CorsConfig())
+	router.Use(middlewares.CORS())
 
 	repo := repository.NewUserRepository(db)
 	userService := svc.NewUserService(repo)

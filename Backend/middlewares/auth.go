@@ -1,56 +1,58 @@
 package middlewares
 
 import (
-	"net/http"
-	"strings"
+    "Project1/utils"
+    "net/http"
 
-	"Project1/utils"
-
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+    "github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		authHeader := ctx.GetHeader("Authorization")
-		if authHeader == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no authorization header"})
-			ctx.Abort()
-			return
-		}
-
-		splits := strings.Split(authHeader, " ")
-		if splits[0] != "Bearer" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token invalid"})
-			ctx.Abort()
-			return
-		}
-
-		if len(splits) < 2 {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token missing"})
-            ctx.Abort()
+    return func(c *gin.Context) {
+        authHeader := c.GetHeader("Authorization")
+        if authHeader == "" {
+            c.JSON(http.StatusUnauthorized, gin.H{
+                "success": false,
+                "error":   "Authorization header required",
+            })
+            c.Abort()
             return
         }
 
-		tokenString := splits[1]
+        tokenString := utils.ExtractTokenFromHeader(authHeader)
+        if tokenString == "" {
+            c.JSON(http.StatusUnauthorized, gin.H{
+                "success": false,
+                "error":   "Invalid authorization format",
+            })
+            c.Abort()
+            return
+        }
 
-		token, err := utils.ValidateToken(tokenString)
-		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token invalid"})
-			ctx.Abort()
-			return
-		}
+        claims, err := utils.ValidateToken(tokenString)
+        if err != nil {
+            var errorMsg string
+            switch err {
+            case utils.ErrExpiredToken:
+                errorMsg = "Token has expired"
+            case utils.ErrInvalidToken:
+                errorMsg = "Invalid token"
+            default:
+                errorMsg = "Authentication failed"
+            }
 
-		claims := token.Claims.(jwt.MapClaims)
+            c.JSON(http.StatusUnauthorized, gin.H{
+                "success": false,
+                "error":   errorMsg,
+            })
+            c.Abort()
+            return
+        }
 
-		id := int64(claims["id"].(float64))
-		username := claims["username"].(string)
-		role := claims["role"].(string)
+        c.Set("Id", claims.Id)
+        c.Set("Username", claims.Username)
+        c.Set("userRole", claims.Role)
 
-		ctx.Set("id", id)
-		ctx.Set("username", username)
-		ctx.Set("role", role)
-
-		ctx.Next()
-	}
+        c.Next()
+    }
 }

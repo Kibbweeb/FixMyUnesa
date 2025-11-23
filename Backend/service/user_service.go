@@ -3,10 +3,8 @@ package service
 import (
 	"Project1/models"
 	"Project1/repository"
-    "errors"
-
-	"golang.org/x/crypto/bcrypt"
-    "github.com/go-pg/pg/v10"
+	"Project1/utils"
+	"errors"
 )
 
 type UserService struct {
@@ -25,35 +23,42 @@ func (s *UserService) IsEmailExist(email string) (bool, error) {
 // Proses sign up user baru
 func (s *UserService) CreateUser(req models.SignUpRequest) error {
 
-    hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
+    hashedPassword, err := utils.HashPassword(req.Password)
     if err != nil {
-        return err
+        return errors.New("failed to hash password")
     }
 
     user := models.User{
         Name:     req.Name,
         Email:    req.Email,
-        Password: string(hashed),
+        Password: string(hashedPassword),
     }
 
     return s.Repo.CreateUser(&user)
 }
 
 //Sign in
-func (s *UserService) SignIn(req models.SignInRequest) (*models.User, error) {
+func (s *UserService) SignIn(req models.SignInRequest) (*models.AuthResponse, error) {
     user, err := s.Repo.GetUserByEmail(req.Email)
-    
+
     if err != nil {
-    if err == pg.ErrNoRows {
-        return nil, errors.New("email tidak ditemukan")
-    }
-    return nil, errors.New("database error")
-}
-
-
-    if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-        return nil, errors.New("password salah")
+        return nil, errors.New("email atau password salah")
     }
 
-    return user, nil
+    if !utils.CheckPassword(req.Password, user.Password) {
+        return nil, errors.New("email atau password salah")
+    }
+
+    token, err := utils.GenerateJWT(user.Id, user.Name, user.Role)
+    if err !=  nil {
+        return nil, errors.New("failed to generate token")
+    }
+
+    return &models.AuthResponse{
+        Id: user.Id,
+        Name: user.Name,
+        Email: user.Email,
+        Role: user.Role,
+        Token: token,
+    }, nil
 }

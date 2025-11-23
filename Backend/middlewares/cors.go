@@ -1,4 +1,4 @@
-package config
+package middlewares
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-func CorsConfig() gin.HandlerFunc {
+func CORS() gin.HandlerFunc {
 	allowedOrigins := []string{os.Getenv("CLIENT_ADDR")}
 
 	return cors.New(cors.Config{

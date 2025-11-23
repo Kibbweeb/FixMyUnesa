@@ -3,7 +3,6 @@ package handlers
 import (
 	"Project1/models"
 	"Project1/service"
-	"Project1/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,11 +20,6 @@ func (h *AuthHandler) SignUpHandler(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
-		return
-	}
-
-	if req.Name == "" || req.Email == "" || req.Password == "" {
-		c.JSON(400, gin.H{"error": "Name, Email, Password wajib diisi"})
 		return
 	}
 
@@ -57,32 +51,15 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 		return
 	}
 
-	if req.Email == "" || req.Password == "" {
-		c.JSON(400, gin.H{"error": "Email dan Password wajib diisi"})
-		return
-	}
-
-	user, err := h.UserService.SignIn(req)
+	authResponse, err := h.UserService.SignIn(req)
 	if err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
-		return
-	}
-
-	token, err := utils.GenerateJWT(user.Id, user.Name, user.Role)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	
 	c.JSON(200, gin.H{
 		"success": true,
 		"message": "SignIn berhasil",
-		"data": gin.H{
-			"id":    user.Id,
-			"name":  user.Name,
-			"email": user.Email,
-			"role":  user.Role,
-			"token": token,
-		},
+		"data": authResponse,
 	})
 }
