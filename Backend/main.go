@@ -24,10 +24,12 @@ func main() {
 
 	router.Use(middlewares.CORS())
 
-	repo := repository.NewUserRepository(db)
-	userService := svc.NewUserService(repo)
+	userRepo := repository.NewUserRepository(db)
+	reportRepo := repository.NewReportRepository(db)
+	userService := svc.NewUserService(userRepo)
+	reportService := svc.NewReportService(reportRepo)
 	authHandler := handlers.NewAuthHandler(userService)
-
+	reportHandler := handlers.NewReportHandler(reportService)
 	public := router.Group("/api")
 	user := public.Group("/user")
 	admin := public.Group("/admin")
@@ -38,6 +40,12 @@ func main() {
 
 	public.POST("/signup", authHandler.SignUpHandler)
 	public.POST("/signin", authHandler.SignInHandler)
+
+	user.POST("/report", reportHandler.CreateReport)
+
+	admin.GET("/report/search", reportHandler.GetReportsByTitle)
+	admin.GET("/reports", reportHandler.GetAllReports)
+	admin.PATCH("/report/:id", reportHandler.UpdateStatus)
 
 	user.POST("/profile", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
