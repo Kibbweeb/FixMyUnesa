@@ -19,7 +19,7 @@ func NewReportHandler(reportService *service.ReportService) *ReportHandler {
 }
 
 func (h *ReportHandler) CreateReport(c *gin.Context) {
-	userIdClaim, exists := c.Get("Id")
+	userIdClaim, exists := c.Get("id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "user unauthorized"})
 		return
@@ -34,7 +34,7 @@ func (h *ReportHandler) CreateReport(c *gin.Context) {
 
 	err := h.ReportService.CreateReport(userId, req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed creating report"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

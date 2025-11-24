@@ -12,15 +12,14 @@ type User struct {
 }
 
 type Report struct {
-	Id          int64  `pg:"id,pk" json:"id"`
-	UserId      int64  `pg:"user_id,notnull" json:"user_id"`
-	User        *User  `pg:"rel:has-one" json:"user,omitempty"`
-	Title       string `pg:"title" json:"title"`
-	Description string `pg:"description" json:"description"`
-	// TODO: Add default value for status
-	Status    string    `pg:"status" json:"status"`
-	CreatedAt time.Time `pg:"created_at,default:now()" json:"created_at"`
-	UpdatedAt time.Time `pg:"updatedAt,default:now()" json:"updated_at"`
+	Id          int64     `pg:"id,pk" json:"id"`
+	UserId      int64     `pg:"user_id,notnull" json:"user_id"`
+	User        *User     `pg:"rel:has-one" json:"user,omitempty"`
+	Title       string    `pg:"title" json:"title"`
+	Description string    `pg:"description" json:"description"`
+	Status      string    `pg:"status,default:'menunggu'" json:"status"`
+	CreatedAt   time.Time `pg:"created_at,default:now()" json:"created_at"`
+	UpdatedAt   time.Time `pg:"updated_at,default:now()" json:"updated_at"`
 }
 
 type SignUpRequest struct {
