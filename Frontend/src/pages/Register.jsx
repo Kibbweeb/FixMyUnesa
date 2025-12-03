@@ -34,22 +34,35 @@ export default function Register() {
     }
 
     try {
+      const payload = {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        nim: form.nim,
+        fakultas: form.fakultas,
+        prodi: form.prodi,
+      };
+
+      console.log("Signup payload:", payload);
+
       const res = await fetch("http://localhost:8080/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      console.log("Signup response:", res.status, data);
 
       if (!res.ok) {
-        setMessage(data.error || "Gagal register");
+        setMessage(data.error || data.message || "Gagal register");
         return;
       }
 
-      setMessage("Registrasi berhasil!");
+      setMessage(data.message || "Registrasi berhasil!");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
+      console.error("Signup error:", err);
       setMessage("Gagal terhubung ke server");
     }
   };

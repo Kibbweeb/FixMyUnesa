@@ -56,10 +56,10 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"success": true,
 		"message": "SignIn berhasil",
-		"data": authResponse,
+		"data":    authResponse,
 	})
 }

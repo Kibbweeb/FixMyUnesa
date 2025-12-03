@@ -6,7 +6,10 @@ type User struct {
 	Id        int64     `pg:"id,pk" json:"id"`
 	Name      string    `pg:"name" json:"name"`
 	Email     string    `pg:"email,unique" json:"email"`
+	NIM       string    `pg:"nim" json:"nim"`
 	Password  string    `pg:"password" json:"-"`
+	Fakultas  string    `pg:"fakultas" json:"fakultas"`
+	Prodi     string    `pg:"prodi" json:"prodi"`
 	Role      string    `pg:"role,default:'user'" json:"role"`
 	CreatedAt time.Time `pg:"created_at,default:now()" json:"created_at"`
 }
@@ -25,6 +28,9 @@ type Report struct {
 type SignUpRequest struct {
 	Name     string `json:"name" binding:"required,min=2"`
 	Email    string `json:"email" binding:"required,email"`
+	NIM      string `json:"nim" binding:"required"`
+	Fakultas string `json:"fakultas" binding:"required"`
+	Prodi    string `json:"prodi" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 
