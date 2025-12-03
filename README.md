@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password TEXT NOT NULL,
     role VARCHAR(50) DEFAULT 'user',
+    prodi VARCHAR(255) NOT NULL,
+    fakultas VARCHAR(255) NOT NULL,
+    nim VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
