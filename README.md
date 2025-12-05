@@ -31,6 +31,28 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
+Setup the reports table in your postgreSQL database using the following SQL commands:
+
+```sql
+CREATE TABLE reports (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(255),
+    description TEXT,
+    category VARCHAR(100),
+    location VARCHAR(255),
+    priority VARCHAR(50) DEFAULT 'medium',
+    status VARCHAR(50) DEFAULT 'menunggu',
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+
+    CONSTRAINT fk_user
+        FOREIGN KEY(user_id) 
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+```
+
 ## Frontend Setup
 run the following command to install the necessary Node.js packages in the frontend directory:
 
