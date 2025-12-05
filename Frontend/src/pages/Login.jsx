@@ -24,15 +24,14 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
-      // Kirim ke backend kamu nanti
       const result = await onLogin(formData);
 
       if (result.success) {
-        // Redirect berdasar role dari backend
         if (result.role === "admin") {
-          navigate("/admin");
+          navigate("/admin/managereports");
         } else {
           navigate("/home");
         }
@@ -40,10 +39,11 @@ const Login = ({ onLogin }) => {
         setError(result.message || "Email atau password salah");
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("Terjadi kesalahan server");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

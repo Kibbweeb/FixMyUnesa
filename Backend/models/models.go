@@ -20,6 +20,9 @@ type Report struct {
 	User        *User     `pg:"rel:has-one" json:"user,omitempty"`
 	Title       string    `pg:"title" json:"title"`
 	Description string    `pg:"description" json:"description"`
+	Category    string    `pg:"category" json:"category"`
+	Location    string    `pg:"location" json:"location"`
+	Priority    string    `pg:"priority,default:'medium'" json:"priority"`
 	Status      string    `pg:"status,default:'menunggu'" json:"status"`
 	CreatedAt   time.Time `pg:"created_at,default:now()" json:"created_at"`
 	UpdatedAt   time.Time `pg:"updated_at,default:now()" json:"updated_at"`
@@ -50,6 +53,9 @@ type AuthResponse struct {
 type CreateReportRequest struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`
+	Category    string `json:"category" binding:"required"`
+	Location    string `json:"location" binding:"required"`
+	Priority    string `json:"priority"`
 }
 
 type MarkAsDone struct {

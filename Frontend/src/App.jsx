@@ -21,8 +21,58 @@ import NavbarUser from "./pages/NavbarUser";
 import NavbarAdmin from "./pages/NavbarAdmin";
 
 function App() {
-  // Ambil role dari localStorage
-  const role = localStorage.getItem("fixmyunesa_role"); // "user" | "admin" | null
+  const role = localStorage.getItem("fixmyunesa_role");
+
+  const handleLogin = async (formData) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: data.error || "Login gagal",
+        };
+      }
+
+      const userData = data.data;
+
+      console.log("Login successful, token:", userData.token);
+
+      localStorage.setItem("fixmyunesa_token", userData.token);
+      localStorage.setItem("fixmyunesa_role", userData.role);
+      localStorage.setItem(
+        "fixmyunesa_user",
+        JSON.stringify({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+        })
+      );
+
+      return {
+        success: true,
+        role: userData.role,
+      };
+    } catch (error) {
+      console.error("Login error:", error);
+      return {
+        success: false,
+        message: "Terjadi kesalahan server",
+      };
+    }
+  };
 
   return (
     <div>
@@ -42,7 +92,7 @@ function App() {
         <Route path="/" element={<Landing />} />
 
         {/* Auth */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/register" element={<Register />} />
 
         {/* User Routes */}

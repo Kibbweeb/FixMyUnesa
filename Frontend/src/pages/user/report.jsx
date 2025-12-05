@@ -11,6 +11,7 @@ const Report = () => {
     category: "",
     priority: "medium",
     location: "",
+    status: "menunggu",
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -50,37 +51,70 @@ const Report = () => {
     setImagePreview(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulasi submit
-    setTimeout(() => {
-      const newReport = {
-        id: Date.now(),
-        ...formData,
-        status: "pending",
-        createdBy: JSON.parse(localStorage.getItem("fixmyunesa_user")).name,
-        createdAt: new Date().toISOString(),
-        imageUrl:
-          imagePreview ||
-          "https://via.placeholder.com/400x300/3B82F6/ffffff?text=No+Image",
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem("fixmyunesa_token");
+
+      console.log("Token from localStorage:", token);
+
+      if (!token) {
+        alert("Anda harus login terlebih dahulu");
+        navigate("/login");
+        return;
+      }
+
+      // Prepare data for backend
+      const reportData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        location: formData.location,
+        priority: formData.priority,
       };
 
-      const existingReports = JSON.parse(
-        localStorage.getItem("fixmyunesa_reports") || "[]"
-      );
-      existingReports.unshift(newReport);
-      localStorage.setItem(
-        "fixmyunesa_reports",
-        JSON.stringify(existingReports)
-      );
+      console.log("Sending report data:", reportData);
+
+      // Send to backend
+      const response = await fetch("http://localhost:8080/api/user/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(reportData),
+      });
+
+      const responseData = await response.json();
+      console.log("Backend response:", responseData);
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Gagal membuat laporan");
+      }
 
       setSuccessMessage("Laporan berhasil dibuat!");
       setIsSubmitting(false);
 
-      setTimeout(() => navigate("/my-reports"), 2000);
-    }, 1000);
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        category: "",
+        priority: "medium",
+        location: "",
+        status: "menunggu",
+      });
+      setImagePreview(null);
+
+      setTimeout(() => navigate("/myreports"), 2000);
+    } catch (error) {
+      console.error("Error creating report:", error);
+      alert(error.message || "Terjadi kesalahan saat membuat laporan");
+      setIsSubmitting(false);
+    }
   };
 
   return (

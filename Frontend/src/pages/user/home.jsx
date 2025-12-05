@@ -137,7 +137,7 @@ const UserHome = () => {
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Link
-            to="/create-report"
+            to="/report"
             className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex items-center space-x-4">
@@ -154,7 +154,7 @@ const UserHome = () => {
           </Link>
 
           <Link
-            to="/my-reports"
+            to="/myreports"
             className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex items-center space-x-4">
