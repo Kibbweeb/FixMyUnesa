@@ -37,3 +37,7 @@ func (s *ReportService) GetReportsByTitle(title string) ([]models.Report, error)
 func (s *ReportService) ChangeReportStatus(reportId int64, req models.MarkAsDone) error {
 	return s.Repo.ChangeReportStatus(reportId, req.Status)
 }
+
+func (s *ReportService) GetReportsByUserId(userId int64) ([]models.Report, error) {
+	return s.Repo.GetReportsByUserId(userId)
+}

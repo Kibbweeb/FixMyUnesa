@@ -42,6 +42,7 @@ func main() {
 	public.POST("/signin", authHandler.SignInHandler)
 
 	user.POST("/report", reportHandler.CreateReport)
+	user.GET("/my-reports", reportHandler.GetMyReports)
 
 	admin.GET("/report/search", reportHandler.GetReportsByTitle)
 	admin.GET("/reports", reportHandler.GetAllReports)

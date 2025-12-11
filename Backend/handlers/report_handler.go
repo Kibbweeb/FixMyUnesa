@@ -91,3 +91,20 @@ func (h *ReportHandler) UpdateStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Status changed"})
 }
+
+func (h *ReportHandler) GetMyReports(c *gin.Context) {
+	userIdClaim, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user unauthorized"})
+		return
+	}
+	userId := userIdClaim.(int64)
+
+	reports, err := h.ReportService.GetReportsByUserId(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": reports})
+}

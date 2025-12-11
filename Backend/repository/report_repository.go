@@ -64,3 +64,14 @@ func (r *ReportRepository) ChangeReportStatus(reportId int64, reportStatus strin
 
 	return nil
 }
+
+func (r *ReportRepository) GetReportsByUserId(userId int64) ([]models.Report, error) {
+	var reports []models.Report
+
+	err := r.DB.Model(&reports).
+		Relation("User").
+		Where("report.user_id = ?", userId).
+		Select()
+
+	return reports, err
+}

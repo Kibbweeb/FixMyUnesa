@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FiFileText,
   FiCheckCircle,
   FiClock,
   FiAlertCircle,
   FiPlusCircle,
+  FiRefreshCw,
 } from "react-icons/fi";
+import { TbReport } from "react-icons/tb";
 
 const UserHome = () => {
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     totalReports: 0,
     pending: 0,
@@ -21,20 +26,59 @@ const UserHome = () => {
     loadReports();
   }, []);
 
-  const loadReports = () => {
-    const savedReports = localStorage.getItem("fixmyunesa_reports");
-    const allReports = savedReports ? JSON.parse(savedReports) : [];
+  const loadReports = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('fixmyunesa_token');
+      
+      if (!token) {
+        navigate('/login');
+        return;
+      }
 
-    setReports(allReports);
+      const response = await fetch('http://localhost:8080/api/user/my-reports', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-    // Calculate stats
-    const newStats = {
-      totalReports: allReports.length,
-      pending: allReports.filter((r) => r.status === "pending").length,
-      inProgress: allReports.filter((r) => r.status === "in_progress").length,
-      resolved: allReports.filter((r) => r.status === "resolved").length,
-    };
-    setStats(newStats);
+      if (response.status === 401) {
+        localStorage.removeItem('fixmyunesa_token');
+        localStorage.removeItem('fixmyunesa_user');
+        localStorage.removeItem('fixmyunesa_role');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Gagal memuat laporan');
+      }
+
+      const result = await response.json();
+      const allReports = result.data || [];
+      setReports(allReports);
+
+      // Calculate stats
+      const newStats = {
+        totalReports: allReports.length,
+        pending: allReports.filter((r) => r.status === "pending" || r.status === "menunggu").length,
+        inProgress: allReports.filter((r) => r.status === "in_progress" || r.status === "diproses").length,
+        resolved: allReports.filter((r) => r.status === "resolved" || r.status === "selesai").length,
+      };
+      setStats(newStats);
+    } catch (err) {
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Tidak dapat terhubung ke server. Pastikan backend berjalan.');
+      } else {
+        setError(err.message || 'Terjadi kesalahan saat memuat laporan');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const statsData = [
@@ -71,10 +115,13 @@ const UserHome = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
+      case "menunggu":
         return "bg-yellow-100 text-yellow-800";
       case "in_progress":
+      case "diproses":
         return "bg-blue-100 text-blue-800";
       case "resolved":
+      case "selesai":
         return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -84,11 +131,14 @@ const UserHome = () => {
   const getStatusLabel = (status) => {
     switch (status) {
       case "pending":
-        return "Pending";
+      case "menunggu":
+        return "Menunggu";
       case "in_progress":
-        return "In Progress";
+      case "diproses":
+        return "Diproses";
       case "resolved":
-        return "Resolved";
+      case "selesai":
+        return "Selesai";
       default:
         return status;
     }
@@ -102,6 +152,40 @@ const UserHome = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
           <p className="text-gray-600 text-lg">Selamat datang di FixMyUnesa</p>
         </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center border border-gray-100 mb-8">
+            <div className="inline-block">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
+            </div>
+            <p className="mt-4 text-gray-600 font-medium">Memuat data...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-red-200 mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <FiAlertCircle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Terjadi Kesalahan</h3>
+                  <p className="text-gray-600 text-sm">{error}</p>
+                </div>
+              </div>
+              <button
+                onClick={loadReports}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all"
+              >
+                <FiRefreshCw className="w-4 h-4" />
+                <span>Coba Lagi</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -178,7 +262,7 @@ const UserHome = () => {
               Laporan Terbaru
             </h2>
             <Link
-              to="/report-list"
+              to="/myreports"
               className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
             >
               Lihat Semua →
@@ -234,7 +318,7 @@ const UserHome = () => {
                         <span>{report.category}</span>
                         <span>•</span>
                         <span>
-                          {new Date(report.createdAt).toLocaleDateString(
+                          {new Date(report.created_at).toLocaleDateString(
                             "id-ID"
                           )}
                         </span>

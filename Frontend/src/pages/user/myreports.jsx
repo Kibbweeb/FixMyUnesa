@@ -1,20 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FiPlusCircle, FiFilter, FiSearch } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiPlusCircle, FiFilter, FiSearch, FiAlertCircle, FiRefreshCw } from 'react-icons/fi';
+import { TbReport } from 'react-icons/tb';
 
 const MyReports = () => {
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadReports();
   }, []);
 
-  const loadReports = () => {
-    const savedReports = localStorage.getItem('fixmyunesa_reports');
-    const allReports = savedReports ? JSON.parse(savedReports) : [];
-    setReports(allReports);
+  const loadReports = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('fixmyunesa_token');
+      
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch('http://localhost:8080/api/user/my-reports', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('fixmyunesa_token');
+        localStorage.removeItem('fixmyunesa_user');
+        localStorage.removeItem('fixmyunesa_role');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Gagal memuat laporan');
+      }
+
+      const result = await response.json();
+      setReports(result.data || []);
+    } catch (err) {
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Tidak dapat terhubung ke server. Pastikan backend berjalan.');
+      } else {
+        setError(err.message || 'Terjadi kesalahan saat memuat laporan');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -62,6 +105,54 @@ const MyReports = () => {
                          report.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+          </div>
+          <p className="mt-4 text-gray-600 font-medium">Memuat laporan...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-red-200">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <FiAlertCircle className="w-8 h-8 text-red-600" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+              Terjadi Kesalahan
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              {error}
+            </p>
+            <button
+              onClick={loadReports}
+              className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-105"
+            >
+              <FiRefreshCw className="w-5 h-5" />
+              <span>Coba Lagi</span>
+            </button>
+            <Link
+              to="/home"
+              className="block text-center mt-4 text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Kembali ke Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
@@ -123,29 +214,39 @@ const MyReports = () => {
             <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <FiPlusCircle className="w-12 h-12 text-blue-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Belum Ada Laporan</h3>
-            <p className="text-gray-600 mb-6">Mulai buat laporan untuk melaporkan masalah di kampus</p>
-            <Link
-              to="/create-report"
-              className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-            >
-              <FiPlusCircle className="w-5 h-5" />
-              <span>Buat Laporan Pertama</span>
-            </Link>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {searchTerm || filterStatus !== 'all' ? 'Tidak Ada Hasil' : 'Belum Ada Laporan'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {searchTerm || filterStatus !== 'all' 
+                ? 'Tidak ada laporan yang sesuai dengan filter Anda' 
+                : 'Mulai buat laporan untuk melaporkan masalah di kampus'}
+            </p>
+            {!searchTerm && filterStatus === 'all' && (
+              <Link
+                to="/create-report"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                <FiPlusCircle className="w-5 h-5" />
+                <span>Buat Laporan Pertama</span>
+              </Link>
+            )}
           </div>
         ) : (
+          <>
+            <div className="mb-4">
+              <p className="text-gray-600">
+                Menampilkan <span className="font-semibold text-blue-600">{filteredReports.length}</span> dari <span className="font-semibold">{reports.length}</span> laporan
+              </p>
+            </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredReports.map((report) => (
               <div
                 key={report.id}
                 className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               >
-                <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 relative overflow-hidden">
-                  <img
-                    src={report.imageUrl}
-                    alt={report.title}
-                    className="w-full h-full object-cover opacity-80"
-                  />
+                <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 relative overflow-hidden flex items-center justify-center">
+                  <TbReport className="text-white text-8xl opacity-80" />
                   <div className="absolute top-4 right-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(report.status)}`}>
                       {getStatusLabel(report.status)}
@@ -162,8 +263,8 @@ const MyReports = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-500">Prioritas:</span>
-                      <span className={`font-semibold ${getPriorityColor(report.priority)}`}>
-                        {report.priority.toUpperCase()}
+                      <span className={`font-semibold capitalize ${getPriorityColor(report.priority || 'medium')}`}>
+                        {report.priority || 'medium'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -171,9 +272,9 @@ const MyReports = () => {
                       <span className="font-semibold text-gray-900">{report.location}</span>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                      <span className="text-gray-500">Tanggal:</span>
+                      <span className="text-gray-500">Dibuat:</span>
                       <span className="font-semibold text-gray-900">
-                        {new Date(report.createdAt).toLocaleDateString('id-ID')}
+                        {new Date(report.created_at).toLocaleDateString('id-ID')}
                       </span>
                     </div>
                   </div>
@@ -181,6 +282,7 @@ const MyReports = () => {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
     </div>
