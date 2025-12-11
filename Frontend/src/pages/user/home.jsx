@@ -12,6 +12,7 @@ import { TbReport } from "react-icons/tb";
 
 const UserHome = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,6 +24,15 @@ const UserHome = () => {
   });
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("fixmyunesa_user");
+    if (storedUser) {
+      try {
+        const userObj = JSON.parse(storedUser);
+        setUsername(userObj.name || userObj);
+      } catch {
+        setUsername(storedUser);
+      }
+    }
     loadReports();
   }, []);
 
@@ -31,6 +41,7 @@ const UserHome = () => {
       setLoading(true);
       setError(null);
       const token = localStorage.getItem('fixmyunesa_token');
+      const username = localStorage.getItem('fixmyunesa_user');
       
       if (!token) {
         navigate('/login');
@@ -149,7 +160,7 @@ const UserHome = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Selamat Datang, {username}</h1>
           <p className="text-gray-600 text-lg">Selamat datang di FixMyUnesa</p>
         </div>
 
