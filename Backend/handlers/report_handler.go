@@ -176,3 +176,49 @@ func (h *ReportHandler) GetMyReports(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": reports})
 }
+
+func (h *ReportHandler) DeleteReport(c *gin.Context) {
+	userIdClaim, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user unauthorized"})
+		return
+	}
+	userId := userIdClaim.(int64)
+
+	stringId := c.Param("id")
+	id, err := strconv.Atoi(stringId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id should be integer"})
+		return
+	}
+
+	// Verifikasi bahwa report milik user yang login
+	report, err := h.ReportService.GetReportsByUserId(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Cek apakah report ada dalam list user
+	found := false
+	for _, r := range report {
+		if r.Id == int64(id) {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you don't have permission to delete this report"})
+		return
+	}
+
+	// Hapus report (dan fotonya)
+	err = h.ReportService.DeleteReport(int64(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Report deleted successfully"})
+}

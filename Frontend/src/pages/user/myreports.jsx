@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlusCircle, FiFilter, FiSearch, FiAlertCircle, FiRefreshCw } from 'react-icons/fi';
+import { FiPlusCircle, FiFilter, FiSearch, FiAlertCircle, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
 import { TbReport } from 'react-icons/tb';
 
 const MyReports = () => {
@@ -57,6 +57,47 @@ const MyReports = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (reportId, reportTitle) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus laporan "${reportTitle}"?`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('fixmyunesa_token');
+      
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8080/api/user/report/${reportId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('fixmyunesa_token');
+        localStorage.removeItem('fixmyunesa_user');
+        localStorage.removeItem('fixmyunesa_role');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Gagal menghapus laporan');
+      }
+
+      // Refresh list setelah delete
+      await loadReports();
+      alert('Laporan berhasil dihapus!');
+    } catch (err) {
+      alert(err.message || 'Terjadi kesalahan saat menghapus laporan');
     }
   };
 
@@ -287,6 +328,17 @@ const MyReports = () => {
                         {new Date(report.created_at).toLocaleDateString('id-ID')}
                       </span>
                     </div>
+                  </div>
+                  
+                  {/* Delete Button */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => handleDelete(report.id, report.title)}
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-all duration-300 hover:shadow-lg"
+                    >
+                      <FiTrash2 className="w-4 h-4" />
+                      <span>Hapus Laporan</span>
+                    </button>
                   </div>
                 </div>
               </div>

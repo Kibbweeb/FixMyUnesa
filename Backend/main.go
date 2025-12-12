@@ -45,6 +45,7 @@ func main() {
 
 	user.POST("/report", reportHandler.CreateReport)
 	user.GET("/my-reports", reportHandler.GetMyReports)
+	user.DELETE("/report/:id", reportHandler.DeleteReport)
 
 	admin.GET("/report/search", reportHandler.GetReportsByTitle)
 	admin.GET("/reports", reportHandler.GetAllReports)

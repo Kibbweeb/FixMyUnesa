@@ -1,6 +1,8 @@
 package service
 
 import (
+	"os"
+
 	"Project1/models"
 	"Project1/repository"
 )
@@ -41,4 +43,17 @@ func (s *ReportService) ChangeReportStatus(reportId int64, req models.MarkAsDone
 
 func (s *ReportService) GetReportsByUserId(userId int64) ([]models.Report, error) {
 	return s.Repo.GetReportsByUserId(userId)
+}
+
+func (s *ReportService) DeleteReport(reportId int64) error {
+	report, err := s.Repo.GetReportById(reportId)
+	if err != nil {
+		return err
+	}
+
+	if report.PictPath != "" {
+		os.Remove(report.PictPath)
+	}
+
+	return s.Repo.DeleteReport(reportId)
 }

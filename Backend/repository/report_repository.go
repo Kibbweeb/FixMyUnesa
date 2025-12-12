@@ -59,7 +59,7 @@ func (r *ReportRepository) ChangeReportStatus(reportId int64, reportStatus strin
 	}
 
 	if result.RowsAffected() == 0 {
-		return errors.New("Report not found")
+		return errors.New("report not found")
 	}
 
 	return nil
@@ -74,4 +74,27 @@ func (r *ReportRepository) GetReportsByUserId(userId int64) ([]models.Report, er
 		Select()
 
 	return reports, err
+}
+
+func (r *ReportRepository) GetReportById(reportId int64) (*models.Report, error) {
+	report := &models.Report{Id: reportId}
+	err := r.DB.Model(report).WherePK().Select()
+	if err != nil {
+		return nil, err
+	}
+	return report, nil
+}
+
+func (r *ReportRepository) DeleteReport(reportId int64) error {
+	report := &models.Report{Id: reportId}
+	result, err := r.DB.Model(report).WherePK().Delete()
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return errors.New("report not found")
+	}
+
+	return nil
 }
