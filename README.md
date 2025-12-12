@@ -45,6 +45,7 @@ CREATE TABLE reports (
     status VARCHAR(50) DEFAULT 'menunggu',
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    pict_path TEXT,
 
     CONSTRAINT fk_user
         FOREIGN KEY(user_id) 
