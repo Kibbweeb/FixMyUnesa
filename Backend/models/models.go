@@ -24,6 +24,7 @@ type Report struct {
 	Location    string    `pg:"location" json:"location"`
 	Priority    string    `pg:"priority,default:'medium'" json:"priority"`
 	Status      string    `pg:"status,default:'menunggu'" json:"status"`
+	PictPath    string    `pg:"pict_path" json:"pict_path"`
 	CreatedAt   time.Time `pg:"created_at,default:now()" json:"created_at"`
 	UpdatedAt   time.Time `pg:"updated_at,default:now()" json:"updated_at"`
 }
@@ -56,6 +57,7 @@ type CreateReportRequest struct {
 	Category    string `json:"category" binding:"required"`
 	Location    string `json:"location" binding:"required"`
 	Priority    string `json:"priority"`
+	Picture     string `json:"picture"`
 }
 
 type MarkAsDone struct {

@@ -304,36 +304,41 @@ const UserHome = () => {
               {recentReports.map((report) => (
                 <div
                   key={report.id}
-                  className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all duration-300 hover:border-blue-300"
+                  className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 hover:border-blue-300 flex"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-bold text-gray-900">
-                          {report.title}
-                        </h3>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                            report.status
-                          )}`}
-                        >
-                          {getStatusLabel(report.status)}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 mb-3 line-clamp-2">
-                        {report.description}
-                      </p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span className="font-medium">{report.location}</span>
-                        <span>•</span>
-                        <span>{report.category}</span>
-                        <span>•</span>
-                        <span>
-                          {new Date(report.created_at).toLocaleDateString(
-                            "id-ID"
-                          )}
-                        </span>
-                      </div>
+                  {report.pict_path && (
+                    <img
+                      src={`http://localhost:8080/${report.pict_path}`}
+                      alt={report.title}
+                      className="w-24 h-24 object-cover flex-shrink-0"
+                    />
+                  )}
+                  <div className="p-5 flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {report.title}
+                      </h3>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 ${getStatusColor(
+                          report.status
+                        )}`}
+                      >
+                        {getStatusLabel(report.status)}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 mb-3 line-clamp-2">
+                      {report.description}
+                    </p>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span className="font-medium">{report.location}</span>
+                      <span>•</span>
+                      <span>{report.category}</span>
+                      <span>•</span>
+                      <span>
+                        {new Date(report.created_at).toLocaleDateString(
+                          "id-ID"
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>

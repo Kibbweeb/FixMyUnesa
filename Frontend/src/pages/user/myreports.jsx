@@ -164,7 +164,7 @@ const MyReports = () => {
             <p className="text-gray-600 text-lg">Kelola semua laporan yang Anda buat</p>
           </div>
           <Link
-            to="/create-report"
+            to="/report"
             className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
           >
             <FiPlusCircle className="w-5 h-5" />
@@ -245,8 +245,18 @@ const MyReports = () => {
                 key={report.id}
                 className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               >
-                <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 relative overflow-hidden flex items-center justify-center">
-                  <TbReport className="text-white text-8xl opacity-80" />
+                <div className="relative overflow-hidden">
+                  {report.pict_path ? (
+                    <img
+                      src={`http://localhost:8080/${report.pict_path}`}
+                      alt={report.title}
+                      className="h-48 w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                      <TbReport className="text-white text-8xl opacity-80" />
+                    </div>
+                  )}
                   <div className="absolute top-4 right-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(report.status)}`}>
                       {getStatusLabel(report.status)}

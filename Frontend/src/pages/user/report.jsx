@@ -14,6 +14,7 @@ const Report = () => {
     status: "menunggu",
   });
 
+  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -39,6 +40,22 @@ const Report = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Format file tidak didukung. Hanya JPG, JPEG, dan PNG yang diperbolehkan.');
+        e.target.value = '';
+        return;
+      }
+
+      // Validasi ukuran file (max 10MB)
+      const maxSize = 10 * 1024 * 1024; 
+      if (file.size > maxSize) {
+        alert('Ukuran file terlalu besar. Maksimal 10MB.');
+        e.target.value = '';
+        return;
+      }
+
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -49,6 +66,7 @@ const Report = () => {
 
   const removeImage = () => {
     setImagePreview(null);
+    setImageFile(null);
   };
 
   const handleSubmit = async (e) => {
@@ -67,25 +85,27 @@ const Report = () => {
         return;
       }
 
-      // Prepare data for backend
-      const reportData = {
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        location: formData.location,
-        priority: formData.priority,
-      };
+      // Prepare FormData for multipart/form-data
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("category", formData.category);
+      formDataToSend.append("location", formData.location);
+      formDataToSend.append("priority", formData.priority);
 
-      console.log("Sending report data:", reportData);
+      if (imageFile) {
+        formDataToSend.append("picture", imageFile);
+      }
+
+      console.log("Sending report with file");
 
       // Send to backend
       const response = await fetch("http://localhost:8080/api/user/report", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(reportData),
+        body: formDataToSend,
       });
 
       const responseData = await response.json();
@@ -108,6 +128,7 @@ const Report = () => {
         status: "menunggu",
       });
       setImagePreview(null);
+      setImageFile(null);
 
       setTimeout(() => navigate("/myreports"), 2000);
     } catch (error) {
@@ -239,10 +260,13 @@ const Report = () => {
                     <span className="font-semibold">Click to upload</span> atau
                     drag and drop
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    JPG, JPEG, atau PNG (Max. 10MB)
+                  </p>
                   <input
                     type="file"
                     className="hidden"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png"
                     onChange={handleImageChange}
                   />
                 </label>

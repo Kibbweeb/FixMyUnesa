@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"Project1/models"
 	"Project1/service"
+	"Project1/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,13 +29,78 @@ func (h *ReportHandler) CreateReport(c *gin.Context) {
 	}
 	userId := userIdClaim.(int64)
 
-	var req models.CreateReportRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	err := c.Request.ParseMultipartForm(10 << 20)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to parse form"})
 		return
 	}
 
-	err := h.ReportService.CreateReport(userId, req)
+	title := c.PostForm("title")
+	description := c.PostForm("description")
+	category := c.PostForm("category")
+	location := c.PostForm("location")
+	priority := c.PostForm("priority")
+
+	if title == "" || description == "" || category == "" || location == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title, description, category, and location are required"})
+		return
+	}
+
+	// Ambil file jika ada
+	file, fileHeader, err := c.Request.FormFile("picture")
+	pictPath := ""
+
+	if err == nil && file != nil {
+		defer file.Close()
+
+		// Validasi ekstensi file
+		ext := strings.ToLower(filepath.Ext(fileHeader.Filename))
+		allowedExts := map[string]bool{
+			".jpg":  true,
+			".jpeg": true,
+			".png":  true,
+		}
+
+		if !allowedExts[ext] {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "only jpg, jpeg, and png files are allowed"})
+			return
+		}
+
+		contentType := fileHeader.Header.Get("Content-Type")
+		allowedTypes := map[string]bool{
+			"image/jpeg": true,
+			"image/jpg":  true,
+			"image/png":  true,
+		}
+
+		if !allowedTypes[contentType] {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid image format. Only jpg, jpeg, and png are allowed"})
+			return
+		}
+
+		// Generate unique filename
+		uniqueFilename := utils.GenerateUniqueFilename(fileHeader.Filename)
+		uploadPath := filepath.Join("uploads", uniqueFilename)
+
+		// Simpan file ke folder uploads
+		if err := c.SaveUploadedFile(fileHeader, uploadPath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save file"})
+			return
+		}
+
+		pictPath = uploadPath
+	}
+
+	req := models.CreateReportRequest{
+		Title:       title,
+		Description: description,
+		Category:    category,
+		Location:    location,
+		Priority:    priority,
+		Picture:     pictPath,
+	}
+
+	err = h.ReportService.CreateReport(userId, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -15,6 +15,8 @@ Frontend/.vscode/*
 # BACKEND IGNORE
 # ----------------------------
 Backend/.env
+Backend/uploads/*
+!Backend/uploads/.gitkeep
 
 # ----------------------------
 # SHARED / GLOBAL IGNORE

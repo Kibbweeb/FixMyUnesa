@@ -21,6 +21,7 @@ func (s *ReportService) CreateReport(userId int64, req models.CreateReportReques
 		Category:    req.Category,
 		Location:    req.Location,
 		Priority:    req.Priority,
+		PictPath:    req.Picture,
 	}
 
 	return s.Repo.CreateReport(&report)

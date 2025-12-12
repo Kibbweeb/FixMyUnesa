@@ -24,6 +24,8 @@ func main() {
 
 	router.Use(middlewares.CORS())
 
+	router.Static("/uploads", "./uploads")
+
 	userRepo := repository.NewUserRepository(db)
 	reportRepo := repository.NewReportRepository(db)
 	userService := svc.NewUserService(userRepo)
