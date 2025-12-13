@@ -92,7 +92,7 @@ export default function Register() {
                 value={form.name}
                 onChange={handleChange}
                 className="w-full outline-none"
-                placeholder="John Doe"
+                placeholder="James Arthur"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function Register() {
                 value={form.email}
                 onChange={handleChange}
                 className="w-full outline-none"
-                placeholder="email@student.unesa.ac.id"
+                placeholder="email@unesa.ac.id"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function Register() {
               value={form.nim}
               onChange={handleChange}
               className="w-full border p-3 rounded-xl mt-1"
-              placeholder="220123456789"
+              placeholder="24051204012"
             />
           </div>
 

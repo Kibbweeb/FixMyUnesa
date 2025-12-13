@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom"; // Tambahkan useLocation
 
 // Pages
 import Landing from "./pages/Landing";
@@ -21,7 +21,9 @@ import NavbarUser from "./pages/NavbarUser";
 import NavbarAdmin from "./pages/NavbarAdmin";
 
 function App() {
+  const location = useLocation(); // Tambahkan ini
   const role = localStorage.getItem("fixmyunesa_role");
+  const user = JSON.parse(localStorage.getItem("fixmyunesa_user") || "{}");
 
   const handleLogin = async (formData) => {
     try {
@@ -76,18 +78,14 @@ function App() {
 
   return (
     <div>
-
       {/* Navbar hanya tampil selain di halaman login/register */}
-      {window.location.pathname !== "/login" &&
-        window.location.pathname !== "/register" &&
-        window.location.pathname !== "/" && (
-          <>
-            {role === "admin" ? <NavbarAdmin /> : <NavbarUser />}
-          </>
+      {location.pathname !== "/login" && // Ganti window.location.pathname dengan location.pathname
+        location.pathname !== "/register" &&
+        location.pathname !== "/" && (
+          <>{role === "admin" ? <NavbarAdmin /> : <NavbarUser />}</>
         )}
 
       <Routes>
-
         {/* Landing */}
         <Route path="/" element={<Landing />} />
 
@@ -100,11 +98,10 @@ function App() {
         <Route path="/report" element={<Report />} />
         <Route path="/reportlist" element={<ReportList />} />
         <Route path="/myreports" element={<MyReports />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile user={user} />} />
 
         {/* Admin Routes */}
         <Route path="/admin/managereports" element={<ManageReports />} />
-
       </Routes>
     </div>
   );

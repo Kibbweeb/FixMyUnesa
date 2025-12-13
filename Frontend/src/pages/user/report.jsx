@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiUpload, FiX } from "react-icons/fi";
+import Alert from "../../components/Alert";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -40,18 +41,20 @@ const Report = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
-        alert('Format file tidak didukung. Hanya JPG, JPEG, dan PNG yang diperbolehkan.');
-        e.target.value = '';
+        alert(
+          "Format file tidak didukung. Hanya JPG, JPEG, dan PNG yang diperbolehkan."
+        );
+        e.target.value = "";
         return;
       }
 
       // Validasi ukuran file (max 10MB)
-      const maxSize = 10 * 1024 * 1024; 
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        alert('Ukuran file terlalu besar. Maksimal 10MB.');
-        e.target.value = '';
+        alert("Ukuran file terlalu besar. Maksimal 10MB.");
+        e.target.value = "";
         return;
       }
 
@@ -150,11 +153,7 @@ const Report = () => {
           </p>
         </div>
 
-        {successMessage && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-xl animate-fade-in">
-            {successMessage}
-          </div>
-        )}
+        {successMessage && <Alert type="success" message={successMessage} />}
 
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
           <form onSubmit={handleSubmit} className="space-y-6">

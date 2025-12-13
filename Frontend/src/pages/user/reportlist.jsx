@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { FiFilter, FiSearch } from "react-icons/fi";
 import { TbReport } from "react-icons/tb";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
@@ -17,6 +29,50 @@ const ReportList = () => {
     const allReports = savedReports ? JSON.parse(savedReports) : [];
     setReports(allReports);
   };
+
+  // Prepare chart data
+  const prepareChartData = () => {
+    const categoryData = categories.map((cat) => ({
+      name: cat,
+      count: reports.filter((r) => r.category === cat).length,
+    }));
+
+    const statusData = [
+      {
+        name: "Pending",
+        value: reports.filter((r) => r.status === "pending").length,
+        color: "#fbbf24",
+      },
+      {
+        name: "In Progress",
+        value: reports.filter((r) => r.status === "in_progress").length,
+        color: "#3b82f6",
+      },
+      {
+        name: "Resolved",
+        value: reports.filter((r) => r.status === "resolved").length,
+        color: "#10b981",
+      },
+    ];
+
+    // For faculty, assuming reports have faculty field or from user
+    const facultyData = reports.reduce((acc, report) => {
+      const faculty = report.faculty || "Unknown"; // Assuming report has faculty
+      acc[faculty] = (acc[faculty] || 0) + 1;
+      return acc;
+    }, {});
+
+    const facultyChartData = Object.entries(facultyData).map(
+      ([faculty, count]) => ({
+        name: faculty,
+        count,
+      })
+    );
+
+    return { categoryData, statusData, facultyChartData };
+  };
+
+  const { categoryData, statusData, facultyChartData } = prepareChartData();
 
   const categories = [
     "Fasilitas",
@@ -77,6 +133,68 @@ const ReportList = () => {
           <p className="text-gray-600 text-lg">
             Lihat semua laporan yang ada di sistem
           </p>
+        </div>
+
+        {/* Charts */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Statistik Laporan
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Category Chart */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Berdasarkan Kategori
+              </h3>
+              <BarChart width={300} height={200} data={categoryData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#3b82f6" />
+              </BarChart>
+            </div>
+
+            {/* Status Chart */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Berdasarkan Status
+              </h3>
+              <PieChart width={300} height={200}>
+                <Pie
+                  data={statusData}
+                  cx={150}
+                  cy={100}
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {statusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </div>
+
+            {/* Faculty Chart */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Berdasarkan Fakultas
+              </h3>
+              <BarChart width={300} height={200} data={facultyChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#10b981" />
+              </BarChart>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
