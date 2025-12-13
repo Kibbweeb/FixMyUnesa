@@ -5,6 +5,7 @@ import { Routes, Route, useLocation } from "react-router-dom"; // Tambahkan useL
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Login from "./pages/Login";
 
 // User Pages
 import Home from "./pages/user/home";
