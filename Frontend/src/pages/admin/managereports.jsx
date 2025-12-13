@@ -1,96 +1,182 @@
-import React, { useState, useEffect } from 'react';
-import { FiFilter, FiSearch, FiCheckCircle, FiClock, FiAlertCircle, FiFileText } from 'react-icons/fi';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FiFilter,
+  FiSearch,
+  FiCheckCircle,
+  FiClock,
+  FiAlertCircle,
+  FiFileText,
+} from "react-icons/fi";
 
 const ManageReports = () => {
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [stats, setStats] = useState({
     totalReports: 0,
     pending: 0,
     inProgress: 0,
-    resolved: 0
+    resolved: 0,
   });
+
+  const loadReports = useCallback(async () => {
+    const token = localStorage.getItem("fixmyunesa_token");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const response = await fetch("http://localhost:8080/api/admin/reports", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem("fixmyunesa_token");
+      navigate("/login");
+      return;
+    }
+
+    const result = await response.json();
+    const allReports = result.data || [];
+    setReports(allReports);
+
+    const newStats = {
+      totalReports: allReports.length,
+      pending: allReports.filter(
+        (r) => r.status === "pending" || r.status === "menunggu",
+      ).length,
+      inProgress: allReports.filter(
+        (r) => r.status === "in_progress" || r.status === "diproses",
+      ).length,
+      resolved: allReports.filter(
+        (r) => r.status === "resolved" || r.status === "selesai",
+      ).length,
+    };
+    setStats(newStats);
+  }, [navigate]);
 
   useEffect(() => {
     loadReports();
-  }, []);
-
-  const loadReports = () => {
-    const savedReports = localStorage.getItem('fixmyunesa_reports');
-    const allReports = savedReports ? JSON.parse(savedReports) : [];
-    setReports(allReports);
-
-    // Calculate stats
-    const newStats = {
-      totalReports: allReports.length,
-      pending: allReports.filter(r => r.status === 'pending').length,
-      inProgress: allReports.filter(r => r.status === 'in_progress').length,
-      resolved: allReports.filter(r => r.status === 'resolved').length
-    };
-    setStats(newStats);
-  };
+  }, [loadReports]);
 
   const statsData = [
-    { icon: FiFileText, label: 'Total Laporan', value: stats.totalReports, color: 'blue' },
-    { icon: FiClock, label: 'Pending', value: stats.pending, color: 'yellow' },
-    { icon: FiAlertCircle, label: 'In Progress', value: stats.inProgress, color: 'orange' },
-    { icon: FiCheckCircle, label: 'Resolved', value: stats.resolved, color: 'green' },
+    {
+      icon: FiFileText,
+      label: "Total Laporan",
+      value: stats.totalReports,
+      color: "blue",
+    },
+    { icon: FiClock, label: "Pending", value: stats.pending, color: "yellow" },
+    {
+      icon: FiAlertCircle,
+      label: "In Progress",
+      value: stats.inProgress,
+      color: "orange",
+    },
+    {
+      icon: FiCheckCircle,
+      label: "Resolved",
+      value: stats.resolved,
+      color: "green",
+    },
   ];
 
-  const categories = ['Fasilitas', 'Elektronik', 'Sanitasi', 'Listrik', 'Kebersihan', 'Keamanan', 'Lainnya'];
+  const categories = [
+    "Fasilitas",
+    "Elektronik",
+    "Sanitasi",
+    "Listrik",
+    "Kebersihan",
+    "Keamanan",
+    "Lainnya",
+  ];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'in_progress':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'resolved':
-        return 'bg-green-100 text-green-800 border-green-200';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "in_progress":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "resolved":
+        return "bg-green-100 text-green-800 border-green-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'pending':
-        return 'Pending';
-      case 'in_progress':
-        return 'In Progress';
-      case 'resolved':
-        return 'Resolved';
+      case "pending":
+        return "Pending";
+      case "in_progress":
+        return "In Progress";
+      case "resolved":
+        return "Resolved";
       default:
         return status;
     }
   };
 
-  const handleStatusChange = (reportId, newStatus) => {
-    const updatedReports = reports.map(report => 
-      report.id === reportId ? { ...report, status: newStatus } : report
+  const handleStatusChange = async (reportId, newStatus) => {
+    const token = localStorage.getItem("fixmyunesa_token");
+
+    let dbStatus = newStatus;
+    if (newStatus === "pending") dbStatus = "menunggu";
+    if (newStatus === "in_progress") dbStatus = "diproses";
+    if (newStatus === "resolved") dbStatus = "selesai";
+
+    const response = await fetch(
+      `http://localhost:8080/api/admin/report/${reportId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: dbStatus }),
+      },
     );
-    setReports(updatedReports);
-    localStorage.setItem('fixmyunesa_reports', JSON.stringify(updatedReports));
-    
-    // Recalculate stats
-    const newStats = {
-      totalReports: updatedReports.length,
-      pending: updatedReports.filter(r => r.status === 'pending').length,
-      inProgress: updatedReports.filter(r => r.status === 'in_progress').length,
-      resolved: updatedReports.filter(r => r.status === 'resolved').length
-    };
-    setStats(newStats);
+
+    if (!response.ok) {
+      alert("Gagal mengubah status");
+      return;
+    }
+
+    loadReports();
   };
 
-  const filteredReports = reports.filter(report => {
-    const matchesStatus = filterStatus === 'all' || report.status === filterStatus;
-    const matchesCategory = filterCategory === 'all' || report.category === filterCategory;
-    const matchesSearch = report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.createdBy.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredReports = reports.filter((report) => {
+    const rStatus = report.status || "";
+    const rCategory = report.category || "";
+    const rTitle = report.title || "";
+    const rDesc = report.description || "";
+    const rLoc = report.location || "";
+    const rCreatedBy = report.user ? report.user.name : report.createdBy || "";
+
+    let targetFilter = filterStatus;
+    if (filterStatus === "pending") targetFilter = "menunggu";
+    if (filterStatus === "in_progress") targetFilter = "diproses";
+    if (filterStatus === "resolved") targetFilter = "selesai";
+
+    const matchesStatus =
+      filterStatus === "all" ||
+      rStatus === targetFilter ||
+      rStatus === filterStatus;
+    const matchesCategory =
+      filterCategory === "all" || rCategory === filterCategory;
+    const matchesSearch =
+      rTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rDesc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rLoc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rCreatedBy.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesCategory && matchesSearch;
   });
 
@@ -99,8 +185,12 @@ const ManageReports = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Kelola Laporan</h1>
-          <p className="text-gray-600 text-lg">Dashboard admin untuk mengelola semua laporan</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Kelola Laporan
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Dashboard admin untuk mengelola semua laporan
+          </p>
         </div>
 
         {/* Stats Grid */}
@@ -114,10 +204,16 @@ const ManageReports = () => {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">{stat.label}</p>
-                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">
+                      {stat.label}
+                    </p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {stat.value}
+                    </p>
                   </div>
-                  <div className={`w-14 h-14 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-700 rounded-xl flex items-center justify-center shadow-lg`}>
+                  <div
+                    className={`w-14 h-14 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-700 rounded-xl flex items-center justify-center shadow-lg`}
+                  >
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                 </div>
@@ -171,8 +267,10 @@ const ManageReports = () => {
                 className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none bg-white"
               >
                 <option value="all">Semua Kategori</option>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </select>
             </div>
@@ -182,8 +280,11 @@ const ManageReports = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            Menampilkan <span className="font-bold text-blue-600">{filteredReports.length}</span> dari{' '}
-            <span className="font-bold">{reports.length}</span> laporan
+            Menampilkan{" "}
+            <span className="font-bold text-blue-600">
+              {filteredReports.length}
+            </span>{" "}
+            dari <span className="font-bold">{reports.length}</span> laporan
           </p>
         </div>
 
@@ -191,8 +292,12 @@ const ManageReports = () => {
         {filteredReports.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center border border-gray-100">
             <div className="text-gray-400 text-6xl mb-4">📋</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Tidak Ada Laporan</h3>
-            <p className="text-gray-600">Belum ada laporan yang perlu dikelola</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              Tidak Ada Laporan
+            </h3>
+            <p className="text-gray-600">
+              Belum ada laporan yang perlu dikelola
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -215,62 +320,89 @@ const ManageReports = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-1">{report.title}</h3>
-                        <p className="text-sm text-gray-500">Dilaporkan oleh {report.createdBy}</p>
+                        <h3 className="text-xl font-bold text-gray-900 mb-1">
+                          {report.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Dilaporkan oleh{" "}
+                          {report.user ? report.user.name : "Unknown"}
+                        </p>
                       </div>
                     </div>
                     <p className="text-gray-600 mb-4">{report.description}</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                       <div>
-                        <span className="text-gray-500 block mb-1">Kategori</span>
-                        <span className="font-semibold text-gray-900">{report.category}</span>
+                        <span className="text-gray-500 block mb-1">
+                          Kategori
+                        </span>
+                        <span className="font-semibold text-gray-900">
+                          {report.category}
+                        </span>
                       </div>
                       <div>
-                        <span className="text-gray-500 block mb-1">Prioritas</span>
-                        <span className="font-semibold text-gray-900">{report.priority.toUpperCase()}</span>
+                        <span className="text-gray-500 block mb-1">
+                          Prioritas
+                        </span>
+                        <span className="font-semibold text-gray-900">
+                          {report.priority.toUpperCase()}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500 block mb-1">Lokasi</span>
-                        <span className="font-semibold text-gray-900">{report.location}</span>
+                        <span className="font-semibold text-gray-900">
+                          {report.location}
+                        </span>
                       </div>
                       <div>
-                        <span className="text-gray-500 block mb-1">Tanggal</span>
+                        <span className="text-gray-500 block mb-1">
+                          Tanggal
+                        </span>
                         <span className="font-semibold text-gray-900">
-                          {new Date(report.createdAt).toLocaleDateString('id-ID')}
+                          {new Date(report.created_at).toLocaleDateString(
+                            "id-ID",
+                          )}
                         </span>
                       </div>
                     </div>
 
                     {/* Status Update */}
                     <div className="flex items-center space-x-3">
-                      <span className="text-sm font-semibold text-gray-700">Status:</span>
+                      <span className="text-sm font-semibold text-gray-700">
+                        Status:
+                      </span>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleStatusChange(report.id, 'pending')}
+                          onClick={() =>
+                            handleStatusChange(report.id, "pending")
+                          }
                           className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                            report.status === 'pending'
-                              ? 'bg-yellow-500 text-white shadow-md'
-                              : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                            report.status === "pending"
+                              ? "bg-yellow-500 text-white shadow-md"
+                              : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
                           }`}
                         >
                           Pending
                         </button>
                         <button
-                          onClick={() => handleStatusChange(report.id, 'in_progress')}
+                          onClick={() =>
+                            handleStatusChange(report.id, "in_progress")
+                          }
                           className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                            report.status === 'in_progress'
-                              ? 'bg-blue-500 text-white shadow-md'
-                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            report.status === "in_progress"
+                              ? "bg-blue-500 text-white shadow-md"
+                              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                           }`}
                         >
                           In Progress
                         </button>
                         <button
-                          onClick={() => handleStatusChange(report.id, 'resolved')}
+                          onClick={() =>
+                            handleStatusChange(report.id, "resolved")
+                          }
                           className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                            report.status === 'resolved'
-                              ? 'bg-green-500 text-white shadow-md'
-                              : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            report.status === "resolved"
+                              ? "bg-green-500 text-white shadow-md"
+                              : "bg-green-100 text-green-700 hover:bg-green-200"
                           }`}
                         >
                           Resolved
