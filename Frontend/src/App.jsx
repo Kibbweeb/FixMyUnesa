@@ -20,6 +20,9 @@ import ManageReports from "./pages/admin/managereports";
 import NavbarUser from "./pages/NavbarUser";
 import NavbarAdmin from "./pages/NavbarAdmin";
 
+// Protected Route
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   const location = useLocation(); // Tambahkan ini
   const role = localStorage.getItem("fixmyunesa_role");
@@ -96,15 +99,57 @@ function App() {
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/register" element={<Register />} />
 
-        {/* User Routes */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/report" element={<Report />} />
-        <Route path="/reportlist" element={<ReportList />} />
-        <Route path="/myreports" element={<MyReports />} />
-        <Route path="/profile" element={<Profile user={user} />} />
+        {/* User Routes - Protected */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Report />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reportlist"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <ReportList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/myreports"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <MyReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Profile user={user} />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Admin Routes */}
-        <Route path="/admin/managereports" element={<ManageReports />} />
+        {/* Admin Routes - Protected */}
+        <Route
+          path="/admin/managereports"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <ManageReports />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );
