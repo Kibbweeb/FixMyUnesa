@@ -44,11 +44,14 @@ type SignInRequest struct {
 }
 
 type AuthResponse struct {
-	Id    int64  `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
-	Token string `json:"token"`
+	Id       int64  `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	NIM      string `json:"nim"`
+	Fakultas string `json:"fakultas"`
+	Prodi    string `json:"prodi"`
+	Role     string `json:"role"`
+	Token    string `json:"token"`
 }
 
 type CreateReportRequest struct {

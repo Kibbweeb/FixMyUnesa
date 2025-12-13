@@ -59,6 +59,9 @@ function App() {
           id: userData.id,
           name: userData.name,
           email: userData.email,
+          nim: userData.nim,
+          fakultas: userData.fakultas,
+          prodi: userData.prodi,
           role: userData.role,
         })
       );

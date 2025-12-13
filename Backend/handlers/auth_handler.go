@@ -63,3 +63,17 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 		"data":    authResponse,
 	})
 }
+
+func (h *AuthHandler) LogoutHandler(c *gin.Context) {
+	userIdClaim, exists := c.Get("id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "user unauthorized"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "Logout berhasil",
+		"userId":  userIdClaim,
+	})
+}

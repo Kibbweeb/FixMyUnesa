@@ -26,10 +26,30 @@ const NavbarAdmin = () => {
     setShowLogoutConfirm(true);
   };
 
-  const confirmLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-    setShowLogoutConfirm(false);
+  const confirmLogout = async () => {
+    try {
+      const token = localStorage.getItem("fixmyunesa_token");
+      
+      // Call backend logout endpoint
+      await fetch("http://localhost:8080/api/logout", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Continue with logout even if backend call fails
+    } finally {
+      // Clear only auth-related items
+      localStorage.removeItem("fixmyunesa_token");
+      localStorage.removeItem("fixmyunesa_role");
+      localStorage.removeItem("fixmyunesa_user");
+      
+      navigate("/login");
+      setShowLogoutConfirm(false);
+    }
   };
 
   return (

@@ -8,9 +8,8 @@ const Profile = ({ user }) => {
     name: user.name || "",
     email: user.email || "",
     nim: user.nim || "",
-    nip: user.nip || "",
-    faculty: user.faculty || "",
-    department: user.department || "",
+    fakultas: user.fakultas || "",
+    prodi: user.prodi || "",
   });
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -35,14 +34,11 @@ const Profile = ({ user }) => {
       name: user.name || "",
       email: user.email || "",
       nim: user.nim || "",
-      nip: user.nip || "",
-      faculty: user.faculty || "",
-      department: user.department || "",
+      fakultas: user.fakultas || "",
+      prodi: user.prodi || "",
     });
     setIsEditing(false);
   };
-
-  const isAdmin = user.role === "admin";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
@@ -66,9 +62,7 @@ const Profile = ({ user }) => {
               </div>
               <div className="text-white">
                 <h2 className="text-3xl font-bold mb-1">{user.name}</h2>
-                <p className="text-blue-100 text-lg">
-                  {isAdmin ? "Administrator" : "Mahasiswa"}
-                </p>
+                <p className="text-blue-100 text-lg">Mahasiswa</p>
               </div>
             </div>
           </div>
@@ -156,103 +150,68 @@ const Profile = ({ user }) => {
                 </div>
               </div>
 
-              {/* NIM/NIP */}
-              {!isAdmin ? (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    NIM
-                  </label>
-                  <input
-                    type="text"
-                    name="nim"
-                    value={formData.nim}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
-                      isEditing
-                        ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        : "border-gray-200 bg-gray-50 cursor-not-allowed"
-                    }`}
-                  />
-                </div>
-              ) : (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    NIP
-                  </label>
-                  <input
-                    type="text"
-                    name="nip"
-                    value={formData.nip}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
-                      isEditing
-                        ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        : "border-gray-200 bg-gray-50 cursor-not-allowed"
-                    }`}
-                  />
-                </div>
-              )}
-
-              {/* Faculty */}
-              {!isAdmin && (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Fakultas
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <FiBook className="text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        name="faculty"
-                        value={formData.faculty}
-                        onChange={handleChange}
-                        disabled={!isEditing}
-                        className={`w-full pl-11 pr-4 py-3 border rounded-xl transition-all duration-200 ${
-                          isEditing
-                            ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            : "border-gray-200 bg-gray-50 cursor-not-allowed"
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Department */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Program Studi
-                    </label>
-                    <input
-                      type="text"
-                      name="department"
-                      value={formData.department}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
-                        isEditing
-                          ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          : "border-gray-200 bg-gray-50 cursor-not-allowed"
-                      }`}
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* Role */}
+              {/* NIM */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Role
+                  NIM
                 </label>
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl">
-                  <span className="font-semibold text-gray-900">
-                    {isAdmin ? "Administrator" : "Mahasiswa"}
-                  </span>
+                <input
+                  type="text"
+                  name="nim"
+                  value={formData.nim}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
+                    isEditing
+                      ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      : "border-gray-200 bg-gray-50 cursor-not-allowed"
+                  }`}
+                />
+              </div>
+
+              {/* Fakultas */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Fakultas
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <FiBook className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="fakultas"
+                    value={formData.fakultas}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className={`w-full pl-11 pr-4 py-3 border rounded-xl transition-all duration-200 ${
+                      isEditing
+                        ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        : "border-gray-200 bg-gray-50 cursor-not-allowed"
+                    }`}
+                  />
                 </div>
               </div>
+
+              {/* Program Studi */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Program Studi
+                </label>
+                <input
+                  type="text"
+                  name="prodi"
+                  value={formData.prodi}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
+                    isEditing
+                      ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      : "border-gray-200 bg-gray-50 cursor-not-allowed"
+                  }`}
+                />
+              </div>
+
             </div>
           </div>
         </div>

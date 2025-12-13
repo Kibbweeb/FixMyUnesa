@@ -42,6 +42,7 @@ func main() {
 
 	public.POST("/signup", authHandler.SignUpHandler)
 	public.POST("/signin", authHandler.SignInHandler)
+	public.POST("/logout", authHandler.LogoutHandler)
 
 	user.POST("/report", reportHandler.CreateReport)
 	user.GET("/my-reports", reportHandler.GetMyReports)

@@ -58,10 +58,13 @@ func (s *UserService) SignIn(req models.SignInRequest) (*models.AuthResponse, er
 	}
 
 	return &models.AuthResponse{
-		Id:    user.Id,
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  user.Role,
-		Token: token,
+		Id:       user.Id,
+		Name:     user.Name,
+		Email:    user.Email,
+		NIM:      user.NIM,
+		Fakultas: user.Fakultas,
+		Prodi:    user.Prodi,
+		Role:     user.Role,
+		Token:    token,
 	}, nil
 }
