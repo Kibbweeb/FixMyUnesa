@@ -7,6 +7,8 @@ import {
   FiClock,
   FiAlertCircle,
   FiFileText,
+  FiTrash2,
+  FiX,
 } from "react-icons/fi";
 import { TbReport } from "react-icons/tb";
 import {
@@ -17,6 +19,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import ModalConfirm from "../../components/ModalConfirm";
 
 const ManageReports = () => {
   const navigate = useNavigate();
@@ -30,6 +33,9 @@ const ManageReports = () => {
     inProgress: 0,
     resolved: 0,
   });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteReportData, setDeleteReportData] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const loadReports = useCallback(async () => {
     const token = localStorage.getItem("fixmyunesa_token");
@@ -168,32 +174,115 @@ const ManageReports = () => {
     loadReports();
   };
 
-  const filteredReports = reports.filter((report) => {
-    const rStatus = report.status || "";
-    const rCategory = report.category || "";
-    const rTitle = report.title || "";
-    const rDesc = report.description || "";
-    const rLoc = report.location || "";
-    const rCreatedBy = report.user ? report.user.name : report.createdBy || "";
+  const handleDelete = async (reportId, reportTitle) => {
+    setDeleteReportData({ id: reportId, title: reportTitle });
+    setShowDeleteConfirm(true);
+  };
 
-    let targetFilter = filterStatus;
-    if (filterStatus === "pending") targetFilter = "menunggu";
-    if (filterStatus === "in_progress") targetFilter = "proses";
-    if (filterStatus === "resolved") targetFilter = "selesai";
+  const confirmDelete = async () => {
+    const { id, title } = deleteReportData;
+    setShowDeleteConfirm(false);
+    setDeleteReportData(null);
 
-    const matchesStatus =
-      filterStatus === "all" ||
-      rStatus === targetFilter ||
-      rStatus === filterStatus;
-    const matchesCategory =
-      filterCategory === "all" || rCategory === filterCategory;
-    const matchesSearch =
-      rTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rDesc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rLoc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rCreatedBy.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesCategory && matchesSearch;
-  });
+    try {
+      const token = localStorage.getItem("fixmyunesa_token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:8080/api/admin/report/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 401) {
+        localStorage.removeItem("fixmyunesa_token");
+        navigate("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Gagal menghapus laporan");
+      }
+
+      // Refresh list setelah delete
+      await loadReports();
+    } catch (err) {
+      alert(err.message || "Terjadi kesalahan saat menghapus laporan");
+    }
+  };
+
+  const getStatusOrder = (status) => {
+    const normalizedStatus = status === "pending" ? "menunggu" : status === "in_progress" ? "proses" : status === "resolved" ? "selesai" : status;
+    switch (normalizedStatus) {
+      case "menunggu":
+        return 1;
+      case "proses":
+        return 2;
+      case "selesai":
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
+  const getPriorityOrder = (priority) => {
+    const normalizedPriority = priority ? priority.toLowerCase() : "medium";
+    switch (normalizedPriority) {
+      case "high":
+      case "tinggi":
+        return 1;
+      case "medium":
+      case "sedang":
+        return 2;
+      case "low":
+      case "rendah":
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
+  const filteredReports = reports
+    .filter((report) => {
+      const rStatus = report.status || "";
+      const rCategory = report.category || "";
+      const rTitle = report.title || "";
+      const rDesc = report.description || "";
+      const rLoc = report.location || "";
+      const rCreatedBy = report.user ? report.user.name : report.createdBy || "";
+
+      let targetFilter = filterStatus;
+      if (filterStatus === "pending") targetFilter = "menunggu";
+      if (filterStatus === "in_progress") targetFilter = "proses";
+      if (filterStatus === "resolved") targetFilter = "selesai";
+
+      const matchesStatus =
+        filterStatus === "all" ||
+        rStatus === targetFilter ||
+        rStatus === filterStatus;
+      const matchesCategory =
+        filterCategory === "all" || rCategory === filterCategory;
+      const matchesSearch =
+        rTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rDesc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rLoc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rCreatedBy.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesCategory && matchesSearch;
+    })
+    .sort((a, b) => {
+      const statusDiff = getStatusOrder(a.status) - getStatusOrder(b.status);
+      if (statusDiff !== 0) return statusDiff;
+      return getPriorityOrder(a.priority) - getPriorityOrder(b.priority);
+    });
 
   const COLORS = [
     "#3b82f6",
@@ -217,6 +306,40 @@ const ManageReports = () => {
 
   return (
     <div className="min-h-screen bg-white pt-24">
+      {/* Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <FiX className="w-8 h-8" />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Detail Laporan"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      )}
+
+      <ModalConfirm
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setDeleteReportData(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Konfirmasi Hapus Laporan"
+        message={`Apakah Anda yakin ingin menghapus laporan "${deleteReportData?.title}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmText="Ya, Hapus"
+        variant="danger"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -376,11 +499,23 @@ const ManageReports = () => {
             {filteredReports.map((report) => (
               <div
                 key={report.id}
-                className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100"
+                className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 relative"
               >
+                {/* Status Badge - Top Right */}
+                <div className="absolute top-4 right-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                      report.status
+                    )}`}
+                  >
+                    {getStatusLabel(report.status)}
+                  </span>
+                </div>
+
                 <div className="flex flex-col md:flex-row md:items-start md:space-x-6">
                   {/* Image */}
-                  <div className="w-full md:w-48 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl overflow-hidden flex-shrink-0 mb-4 md:mb-0">
+                  <div className="w-full md:w-48 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl overflow-hidden flex-shrink-0 mb-4 md:mb-0 cursor-pointer hover:shadow-lg transition-all duration-300"
+                    onClick={() => report.pict_path && setSelectedImage(`http://localhost:8080/${report.pict_path}`)}>
                     {report.pict_path ? (
                       <img
                         src={`http://localhost:8080/${report.pict_path}`}
@@ -486,6 +621,17 @@ const ManageReports = () => {
                           Selesai
                         </button>
                       </div>
+                    </div>
+
+                    {/* Delete Button */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => handleDelete(report.id, report.title)}
+                        className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-all duration-200"
+                      >
+                        <FiTrash2 className="w-4 h-4" />
+                        <span>Hapus Laporan</span>
+                      </button>
                     </div>
                   </div>
                 </div>

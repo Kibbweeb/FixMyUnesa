@@ -17,21 +17,33 @@ export default function Register() {
 
   const [message, setMessage] = useState("");
 
+  const validateEmail = (email) => {
+    const isValidDomain = email.endsWith("@mhs.unesa.ac.id") || email.endsWith("@unesa.ac.id");
+    return isValidDomain;
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("Loading...");
+
+    if (!validateEmail(form.email)) {
+      setMessage("Email harus menggunakan email Unesa!");
+      return;
+    }
 
     if (form.password !== form.confirmPassword) {
       setMessage("Password tidak sama!");
       return;
     }
+
+    setMessage("Loading...");
 
     try {
       const payload = {
@@ -193,11 +205,14 @@ export default function Register() {
           </button>
         </form>
 
-        {/* PESAN */}
         {message && (
-          <p className="text-center mt-4 text-blue-600 font-medium">
+          <div className={`mt-4 p-4 rounded-lg text-center font-medium ${
+            message.includes("berhasil") || message === "Loading..."
+              ? "bg-blue-100 text-blue-700"
+              : "bg-red-100 text-red-700"
+          }`}>
             {message}
-          </p>
+          </div>
         )}
 
         {/* LINK LOGIN */}

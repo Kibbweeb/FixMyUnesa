@@ -53,6 +53,7 @@ func main() {
 	admin.GET("/report/search", reportHandler.GetReportsByTitle)
 	admin.GET("/reports", reportHandler.GetAllReports)
 	admin.PATCH("/report/:id", reportHandler.UpdateStatus)
+	admin.DELETE("/report/:id", reportHandler.AdminDeleteReport)
 
 	router.Run(":" + os.Getenv("APP_PORT"))
 }

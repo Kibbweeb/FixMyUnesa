@@ -7,6 +7,7 @@ import {
   FiAlertCircle,
   FiRefreshCw,
   FiTrash2,
+  FiX,
 } from "react-icons/fi";
 import { TbReport } from "react-icons/tb";
 import ModalConfirm from "../../components/ModalConfirm";
@@ -22,6 +23,7 @@ const MyReports = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteReportData, setDeleteReportData] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     loadReports();
@@ -170,21 +172,58 @@ const MyReports = () => {
     }
   };
 
-  const filteredReports = reports.filter((report) => {
-    const rStatus = report.status || "";
-    
-    let targetFilter = filterStatus;
-    if (filterStatus === "pending") targetFilter = "menunggu";
-    if (filterStatus === "in_progress") targetFilter = "proses";
-    if (filterStatus === "resolved") targetFilter = "selesai";
-    
-    const matchesStatus =
-      filterStatus === "all" || rStatus === targetFilter || rStatus === filterStatus;
-    const matchesSearch =
-      report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  const getStatusOrder = (status) => {
+    const normalizedStatus = status === "pending" ? "menunggu" : status === "in_progress" ? "proses" : status === "resolved" ? "selesai" : status;
+    switch (normalizedStatus) {
+      case "menunggu":
+        return 1;
+      case "proses":
+        return 2;
+      case "selesai":
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
+  const getPriorityOrder = (priority) => {
+    const normalizedPriority = priority ? priority.toLowerCase() : "medium";
+    switch (normalizedPriority) {
+      case "high":
+      case "tinggi":
+        return 1;
+      case "medium":
+      case "sedang":
+        return 2;
+      case "low":
+      case "rendah":
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
+  const filteredReports = reports
+    .filter((report) => {
+      const rStatus = report.status || "";
+      
+      let targetFilter = filterStatus;
+      if (filterStatus === "pending") targetFilter = "menunggu";
+      if (filterStatus === "in_progress") targetFilter = "proses";
+      if (filterStatus === "resolved") targetFilter = "selesai";
+      
+      const matchesStatus =
+        filterStatus === "all" || rStatus === targetFilter || rStatus === filterStatus;
+      const matchesSearch =
+        report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.description.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesSearch;
+    })
+    .sort((a, b) => {
+      const statusDiff = getStatusOrder(a.status) - getStatusOrder(b.status);
+      if (statusDiff !== 0) return statusDiff;
+      return getPriorityOrder(a.priority) - getPriorityOrder(b.priority);
+    });
 
   if (loading) {
     return (
@@ -234,6 +273,28 @@ const MyReports = () => {
 
   return (
     <div className="min-h-screen bg-white pt-24">
+      {/* Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <FiX className="w-8 h-8" />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Detail Laporan"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -339,7 +400,8 @@ const MyReports = () => {
                       <img
                         src={`http://localhost:8080/${report.pict_path}`}
                         alt={report.title}
-                        className="h-48 w-full object-cover"
+                        className="h-48 w-full object-cover cursor-pointer hover:opacity-90 transition-opacity duration-300"
+                        onClick={() => setSelectedImage(`http://localhost:8080/${report.pict_path}`)}
                       />
                     ) : (
                       <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">

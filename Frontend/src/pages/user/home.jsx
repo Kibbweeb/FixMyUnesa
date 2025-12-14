@@ -7,6 +7,7 @@ import {
   FiAlertCircle,
   FiPlusCircle,
   FiRefreshCw,
+  FiX,
 } from "react-icons/fi";
 import { TbReport } from "react-icons/tb";
 
@@ -16,6 +17,7 @@ const UserHome = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [stats, setStats] = useState({
     totalReports: 0,
     pending: 0,
@@ -130,7 +132,45 @@ const UserHome = () => {
     green: "from-green-400 to-green-400",
   };
 
-  const recentReports = reports.slice(0, 3);
+  const getStatusOrder = (status) => {
+    const normalizedStatus = status === "pending" ? "menunggu" : status === "in_progress" ? "diproses" : status === "resolved" ? "selesai" : status;
+    switch (normalizedStatus) {
+      case "menunggu":
+        return 1;
+      case "diproses":
+      case "proses":
+        return 2;
+      case "selesai":
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
+  const getPriorityOrder = (priority) => {
+    const normalizedPriority = priority ? priority.toLowerCase() : "medium";
+    switch (normalizedPriority) {
+      case "high":
+      case "tinggi":
+        return 1;
+      case "medium":
+      case "sedang":
+        return 2;
+      case "low":
+      case "rendah":
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
+  const recentReports = reports
+    .sort((a, b) => {
+      const statusDiff = getStatusOrder(a.status) - getStatusOrder(b.status);
+      if (statusDiff !== 0) return statusDiff;
+      return getPriorityOrder(a.priority) - getPriorityOrder(b.priority);
+    })
+    .slice(0, 3);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -166,6 +206,30 @@ const UserHome = () => {
 
   return (
     <div className="min-h-screen bg-white pt-24">
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 z-51"
+            >
+              <FiX className="w-8 h-8" />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Detail Laporan"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -324,7 +388,12 @@ const UserHome = () => {
                       <img
                         src={`http://localhost:8080/${report.pict_path}`}
                         alt={report.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() =>
+                          setSelectedImage(
+                            `http://localhost:8080/${report.pict_path}`
+                          )
+                        }
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">

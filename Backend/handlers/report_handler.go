@@ -222,3 +222,20 @@ func (h *ReportHandler) DeleteReport(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Report deleted successfully"})
 }
+
+func (h *ReportHandler) AdminDeleteReport(c *gin.Context) {
+	stringId := c.Param("id")
+	id, err := strconv.Atoi(stringId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id should be integer"})
+		return
+	}
+
+	err = h.ReportService.DeleteReport(int64(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Report deleted successfully"})
+}
