@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FiUser } from "react-icons/fi";
+import { Link, useLocation } from "react-router-dom";
 import fixmyLogo from "../assets/LOGO.png";
-import ModalConfirm from "../components/ModalConfirm";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -20,36 +18,6 @@ const Navbar = () => {
 
   const closeNav = () => {
     setNav(false);
-  };
-
-  const handleLogout = () => {
-    setShowLogoutConfirm(true);
-  };
-
-  const confirmLogout = async () => {
-    try {
-      const token = localStorage.getItem("fixmyunesa_token");
-
-      // Call backend logout endpoint
-      await fetch("http://localhost:8080/api/logout", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-      // Continue with logout even if backend call fails
-    } finally {
-      // Clear only auth-related items
-      localStorage.removeItem("fixmyunesa_token");
-      localStorage.removeItem("fixmyunesa_role");
-      localStorage.removeItem("fixmyunesa_user");
-
-      navigate("/login");
-      setShowLogoutConfirm(false);
-    }
   };
 
   return (
@@ -69,12 +37,12 @@ const Navbar = () => {
           <Link to="/myreports">MyReports</Link>
         </li>
         <li className="p-4">
-          <Link to="/profile">Profile</Link>
-        </li>
-        <li className="p-4">
-          <button onClick={handleLogout} className="text-gray-600 font-bold">
-            Logout
-          </button>
+          <Link
+            to="/profile"
+            className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
+          >
+            <FiUser className="w-4 h-4 text-gray-600" />
+          </Link>
         </li>
       </ul>
       <div onClick={handleNav} className="block md:hidden">
@@ -106,31 +74,19 @@ const Navbar = () => {
             </Link>
           </li>
           <li className="p-4 border-b">
-            <Link to="/profile" onClick={closeNav}>
-              Profile
-            </Link>
-          </li>
-          <li className="p-4 border-b">
-            <button
-              onClick={() => {
-                handleLogout();
-                closeNav();
-              }}
-              className="text-white hover:text-gray-200"
+            <Link
+              to="/profile"
+              onClick={closeNav}
+              className="flex items-center space-x-2"
             >
-              Logout
-            </button>
+              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                <FiUser className="w-4 h-4 text-gray-600" />
+              </div>
+              <span>Profile</span>
+            </Link>
           </li>
         </ul>
       </div>
-      <ModalConfirm
-        isOpen={showLogoutConfirm}
-        onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={confirmLogout}
-        title="Konfirmasi Logout"
-        message="Apakah Anda yakin ingin keluar dari akun Anda?"
-        confirmText="Ya, Logout"
-      />
     </div>
   );
 };

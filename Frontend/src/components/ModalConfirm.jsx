@@ -9,6 +9,7 @@ const ModalConfirm = ({
   message,
   confirmText = "Ya",
   cancelText = "Batal",
+  variant = "default",
 }) => {
   if (!isOpen) return null;
 
@@ -16,7 +17,11 @@ const ModalConfirm = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 overflow-hidden border border-gray-200">
         {/* Header */}
-        <div className="bg-blue-600 px-6 py-4 flex items-center justify-between">
+        <div
+          className={`px-6 py-4 flex items-center justify-between ${
+            variant === "danger" ? "bg-red-500" : "bg-blue-500"
+          }`}
+        >
           <div className="flex items-center space-x-3">
             <FiAlertTriangle className="w-6 h-6 text-white" />
             <h3 className="text-lg font-semibold text-white">{title}</h3>
@@ -44,7 +49,11 @@ const ModalConfirm = ({
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className={`px-4 py-2 text-white rounded-lg transition-colors font-medium ${
+              variant === "danger"
+                ? "bg-red-500 hover:bg-red-700"
+                : "bg-blue-500 hover:bg-blue-700"
+            }`}
           >
             {confirmText}
           </button>

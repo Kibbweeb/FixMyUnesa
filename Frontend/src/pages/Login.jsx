@@ -51,19 +51,19 @@ const Login = ({ onLogin }) => {
       <div className="max-w-md w-full">
 
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          <h2 className="text-3xl font-bold text-black mb-2">
             Login
           </h2>
-          <p className="text-gray-600">Masukkan email dan password akun Anda</p>
+          <p className="text-gray-600 font-semibold">Masukkan email dan password akun Anda</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <form onSubmit={handleSubmit} className="space-y-6">
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">Email</label>
               <div className="relative">
-                <FiMail className="absolute left-3 top-3 text-gray-400" />
+                <FiMail className="absolute left-3 top-4 text-gray-400" />
                 <input
                   type="email"
                   name="email"
@@ -71,15 +71,15 @@ const Login = ({ onLogin }) => {
                   onChange={handleChange}
                   placeholder="email@unesa.ac.id"
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-3 text-gray-400" />
+                <FiLock className="absolute left-3 top-4 text-gray-400" />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -87,12 +87,12 @@ const Login = ({ onLogin }) => {
                   onChange={handleChange}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-500"
+                  className="absolute right-3 top-4 text-gray-500"
                 >
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
@@ -108,7 +108,7 @@ const Login = ({ onLogin }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
+              className="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
             >
               {loading ? "Loading..." : "Login"}
             </button>
@@ -116,14 +116,14 @@ const Login = ({ onLogin }) => {
 
           <div className="text-center mt-6 text-sm">
             Belum punya akun?{" "}
-            <Link to="/register" className="text-blue-600 hover:underline">
+            <Link to="/register" className="text-blue-500 hover:underline">
               Daftar di sini
             </Link>
           </div>
         </div>
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-gray-600 hover:text-blue-600">
+          <Link to="/" className="text-gray-600 hover:text-blue-600 font-bold">
             ← Kembali ke Landing
           </Link>
         </div>

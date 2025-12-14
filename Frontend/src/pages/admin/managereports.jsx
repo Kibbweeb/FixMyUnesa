@@ -74,12 +74,12 @@ const ManageReports = () => {
       value: stats.totalReports,
       color: "blue",
     },
-    { icon: FiClock, label: "Pending", value: stats.pending, color: "yellow" },
+    { icon: FiClock, label: "Pending", value: stats.pending, color: "red" },
     {
       icon: FiAlertCircle,
       label: "In Progress",
       value: stats.inProgress,
-      color: "orange",
+      color: "yellow",
     },
     {
       icon: FiCheckCircle,
@@ -181,7 +181,7 @@ const ManageReports = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 pt-24">
+    <div className="min-h-screen bg-white pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -212,7 +212,7 @@ const ManageReports = () => {
                     </p>
                   </div>
                   <div
-                    className={`w-14 h-14 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-700 rounded-xl flex items-center justify-center shadow-lg`}
+                    className={`w-14 h-14 bg-${stat.color}-500 rounded-xl flex items-center justify-center shadow-lg`}
                   >
                     <Icon className="w-7 h-7 text-white" />
                   </div>

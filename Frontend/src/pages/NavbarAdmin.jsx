@@ -54,14 +54,16 @@ const NavbarAdmin = () => {
 
   return (
     <div
-      className="w-full flex justify-between items-center p-4 bg-blue-700 text-white"
+      className="fixed top-0 w-full bg-white text-gray-600 font-bold border-b z-[9999]"
       style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999 }}
     >
-      <img src={fixmyLogo} alt="FixMyUnesa" className="h-16 w-auto ml-10" />
+      <img src={fixmyLogo} alt="FixMyUnesa" className="h-24 w-auto ml-10" />
       {/* Menu Desktop */}
       <ul className="hidden md:flex w-full justify-end mr-4">
         <li className="p-4">
-          <Link to="/admin/managereports">Manage Reports</Link>
+          <Link to="/admin/managereports" className="text-gray-600 font-bold">
+            Manage Reports
+          </Link>
         </li>
         <li className="p-4">
           <button
@@ -82,7 +84,7 @@ const NavbarAdmin = () => {
       <div
         className={
           nav
-            ? "md:hidden left-0 top-0 w-[300px] h-full border-r border-r-gray-900 bg-blue-700 ease-in-out duration-500"
+            ? "md:hidden left-0 top-0  w-[300px] h-full border-r border-r-gray-900 bg-white z-[10000] ease-in-out duration-500"
             : "fixed left-[-100%] md:hidden"
         }
         style={nav ? { position: "fixed", zIndex: 10000 } : {}}
@@ -90,7 +92,11 @@ const NavbarAdmin = () => {
         <img src={fixmyLogo} alt="FixMyUnesa" className="h-12 w-auto m-8" />
         <ul className="p-4">
           <li className="p-4 border-b">
-            <Link to="/admin/managereports" onClick={closeNav}>
+            <Link
+              to="/admin/managereports"
+              onClick={closeNav}
+              className="text-gray-600 font-bold"
+            >
               Manage Reports
             </Link>
           </li>
@@ -114,6 +120,7 @@ const NavbarAdmin = () => {
         title="Konfirmasi Logout"
         message="Apakah Anda yakin ingin keluar dari akun Anda?"
         confirmText="Ya, Logout"
+        variant="danger"
       />
     </div>
   );

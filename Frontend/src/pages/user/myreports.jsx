@@ -225,9 +225,7 @@ const MyReports = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div className="mb-4 md:mb-0">
-            <h1 className="text-4xl font-bold text-black mb-2">
-              Laporan Saya
-            </h1>
+            <h1 className="text-4xl font-bold text-black mb-2">Laporan Saya</h1>
             <p className="text-gray-600 font-semibold text-lg">
               Kelola semua laporan yang Anda buat
             </p>
@@ -412,6 +410,7 @@ const MyReports = () => {
         title="Konfirmasi Hapus Laporan"
         message={`Apakah Anda yakin ingin menghapus laporan "${deleteReportData?.title}"? Tindakan ini tidak dapat dibatalkan.`}
         confirmText="Ya, Hapus"
+        variant="danger"
       />
     </div>
   );
