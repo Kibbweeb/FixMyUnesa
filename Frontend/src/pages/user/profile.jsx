@@ -20,12 +20,26 @@ const Profile = ({ user }) => {
     });
   };
 
-  const handleSave = () => {
-    // Simpan perubahan
-    const updatedUser = { ...user, ...formData };
-    localStorage.setItem("fixmyunesa_user", JSON.stringify(updatedUser));
+  const handleSave = async () => {
+    const token = localStorage.getItem("fixmyunesa_token");
+    if (!token) return
+
+  const response = await fetch("http://localhost:8080/api/user/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    const updatedUserStorage = { ...user, ...data.data };
+    localStorage.setItem("fixmyunesa_user", JSON.stringify(updatedUserStorage));
+
+    setSuccessMessage("Profil berhasi diperbarui")
     setIsEditing(false);
-    setSuccessMessage("Profile berhasil diperbarui!");
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 

@@ -22,7 +22,6 @@ func (s *UserService) IsEmailExist(email string) (bool, error) {
 
 // Proses sign up user baru
 func (s *UserService) CreateUser(req models.SignUpRequest) error {
-
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
 		return errors.New("failed to hash password")
@@ -40,10 +39,29 @@ func (s *UserService) CreateUser(req models.SignUpRequest) error {
 	return s.Repo.CreateUser(&user)
 }
 
+func (s *UserService) UpdateProfile(userId int64, req models.UpdateUserRequest) (*models.User, error) {
+	user, err := s.Repo.GetUserById(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Name = req.Name
+	user.Email = req.Email
+	user.NIM = req.NIM
+	user.Fakultas = req.Fakultas
+	user.Prodi = req.Prodi
+
+	err = s.Repo.UpdateUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 // Sign in
 func (s *UserService) SignIn(req models.SignInRequest) (*models.AuthResponse, error) {
 	user, err := s.Repo.GetUserByEmail(req.Email)
-
 	if err != nil {
 		return nil, errors.New("email atau password salah")
 	}

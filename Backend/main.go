@@ -7,6 +7,7 @@ import (
 	"Project1/handlers"
 	"Project1/middlewares"
 	"Project1/repository"
+
 	svc "Project1/service"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,7 @@ func main() {
 	public.POST("/signin", authHandler.SignInHandler)
 	public.POST("/logout", authHandler.LogoutHandler)
 
+	user.PUT("/profile", authHandler.UpdateProfileHandler)
 	user.POST("/report", reportHandler.CreateReport)
 	user.GET("/my-reports", reportHandler.GetMyReports)
 	user.DELETE("/report/:id", reportHandler.DeleteReport)
@@ -52,11 +54,5 @@ func main() {
 	admin.GET("/reports", reportHandler.GetAllReports)
 	admin.PATCH("/report/:id", reportHandler.UpdateStatus)
 
-	user.POST("/profile", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"username": ctx.MustGet("username"),
-			"role":     ctx.MustGet("role"),
-		})
-	})
 	router.Run(":" + os.Getenv("APP_PORT"))
 }

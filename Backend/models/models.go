@@ -63,6 +63,14 @@ type CreateReportRequest struct {
 	Picture     string `json:"picture"`
 }
 
+type UpdateUserRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	NIM      string `json:"nim" binding:"required"`
+	Fakultas string `json:"fakultas" binding:"required"`
+	Prodi    string `json:"prodi" binding:"required"`
+}
+
 type MarkAsDone struct {
 	Status string `json:"status"`
 }
