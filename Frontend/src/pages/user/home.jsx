@@ -40,33 +40,36 @@ const UserHome = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('fixmyunesa_token');
-      const username = localStorage.getItem('fixmyunesa_user');
-      
+      const token = localStorage.getItem("fixmyunesa_token");
+      const username = localStorage.getItem("fixmyunesa_user");
+
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
-      const response = await fetch('http://localhost:8080/api/user/my-reports', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const response = await fetch(
+        "http://localhost:8080/api/user/my-reports",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
       if (response.status === 401) {
-        localStorage.removeItem('fixmyunesa_token');
-        localStorage.removeItem('fixmyunesa_user');
-        localStorage.removeItem('fixmyunesa_role');
-        navigate('/login');
+        localStorage.removeItem("fixmyunesa_token");
+        localStorage.removeItem("fixmyunesa_user");
+        localStorage.removeItem("fixmyunesa_role");
+        navigate("/login");
         return;
       }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Gagal memuat laporan');
+        throw new Error(errorData.error || "Gagal memuat laporan");
       }
 
       const result = await response.json();
@@ -76,16 +79,22 @@ const UserHome = () => {
       // Calculate stats
       const newStats = {
         totalReports: allReports.length,
-        pending: allReports.filter((r) => r.status === "pending" || r.status === "menunggu").length,
-        inProgress: allReports.filter((r) => r.status === "in_progress" || r.status === "diproses").length,
-        resolved: allReports.filter((r) => r.status === "resolved" || r.status === "selesai").length,
+        pending: allReports.filter(
+          (r) => r.status === "pending" || r.status === "menunggu"
+        ).length,
+        inProgress: allReports.filter(
+          (r) => r.status === "in_progress" || r.status === "diproses"
+        ).length,
+        resolved: allReports.filter(
+          (r) => r.status === "resolved" || r.status === "selesai"
+        ).length,
       };
       setStats(newStats);
     } catch (err) {
-      if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError('Tidak dapat terhubung ke server. Pastikan backend berjalan.');
+      if (err.name === "TypeError" && err.message.includes("fetch")) {
+        setError("Tidak dapat terhubung ke server. Pastikan backend berjalan.");
       } else {
-        setError(err.message || 'Terjadi kesalahan saat memuat laporan');
+        setError(err.message || "Terjadi kesalahan saat memuat laporan");
       }
     } finally {
       setLoading(false);
@@ -95,7 +104,7 @@ const UserHome = () => {
   const statsData = [
     {
       icon: FiFileText,
-      label: "Total Laporan",
+      label: "Total Reports",
       value: stats.totalReports,
       color: "blue",
     },
@@ -115,10 +124,10 @@ const UserHome = () => {
   ];
 
   const colorClasses = {
-    blue: "from-blue-500 to-blue-700",
-    yellow: "from-yellow-500 to-yellow-700",
-    orange: "from-orange-500 to-orange-700",
-    green: "from-green-500 to-green-700",
+    blue: "from-blue-400 to-blue-400",
+    yellow: "from-yellow-400 to-yellow-400",
+    orange: "from-orange-400 to-orange-400",
+    green: "from-green-400 to-green-400",
   };
 
   const recentReports = reports.slice(0, 3);
@@ -156,21 +165,25 @@ const UserHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Selamat Datang, {username}</h1>
-          <p className="text-gray-600 text-lg">Selamat datang di FixMyUnesa</p>
+          <h1 className="text-4xl font-bold text-black mb-2">
+            Selamat Datang, {username}
+          </h1>
+          <p className="text-gray-600 text-lg font-semibold">
+            Selamat datang di FixMyUnesa
+          </p>
         </div>
 
         {/* Loading State */}
         {loading && (
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center border border-gray-100 mb-8">
             <div className="inline-block">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black"></div>
             </div>
-            <p className="mt-4 text-gray-600 font-medium">Memuat data...</p>
+            <p className="mt-4 text-gray-600 font-semibold text-medium">Memuat data...</p>
           </div>
         )}
 
@@ -183,8 +196,8 @@ const UserHome = () => {
                   <FiAlertCircle className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">Terjadi Kesalahan</h3>
-                  <p className="text-gray-600 text-sm">{error}</p>
+                  <h3 className="font-bold text-black">Terjadi Kesalahan</h3>
+                  <p className="text-gray-600 font-semibold text-sm">{error}</p>
                 </div>
               </div>
               <button
@@ -233,15 +246,15 @@ const UserHome = () => {
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Link
             to="/report"
-            className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+              <div className="w-16 h-16 bg-blue-400 rounded-xl flex items-center justify-center">
                 <FiPlusCircle className="w-8 h-8 text-white" />
               </div>
-              <div className="text-white">
+              <div className="text-black font-bold">
                 <h3 className="text-2xl font-bold mb-1">Buat Laporan Baru</h3>
-                <p className="text-blue-100">
+                <p className="text-gray-600 font-semibold">
                   Laporkan masalah fasilitas kampus
                 </p>
               </div>
@@ -253,14 +266,14 @@ const UserHome = () => {
             className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 bg-blue-400 rounded-xl flex items-center justify-center shadow-lg">
                 <FiFileText className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                <h3 className="text-2xl font-bold text-black mb-1">
                   Laporan Saya
                 </h3>
-                <p className="text-gray-600">Lihat semua laporan Anda</p>
+                <p className="text-gray-600 font-semibold">Lihat semua laporan Anda</p>
               </div>
             </div>
           </Link>
@@ -269,12 +282,12 @@ const UserHome = () => {
         {/* Recent Reports */}
         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-black">
               Laporan Terbaru
             </h2>
             <Link
               to="/myreports"
-              className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+              className="text-gray-600 font-semibold hover:text-gray-700 transition-colors"
             >
               Lihat Semua →
             </Link>
@@ -282,18 +295,18 @@ const UserHome = () => {
 
           {recentReports.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiPlusCircle className="w-12 h-12 text-blue-600" />
+              <div className="w-24 h-24 bg-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <FiPlusCircle className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-black mb-2">
                 Belum Ada Laporan
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 font-semibold mb-6">
                 Mulai buat laporan untuk melaporkan masalah di kampus
               </p>
               <Link
-                to="/create-report"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                to="/report"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               >
                 <FiPlusCircle className="w-5 h-5" />
                 <span>Buat Laporan Pertama</span>

@@ -51,13 +51,13 @@ const ManageReports = () => {
     const newStats = {
       totalReports: allReports.length,
       pending: allReports.filter(
-        (r) => r.status === "pending" || r.status === "menunggu",
+        (r) => r.status === "pending" || r.status === "menunggu"
       ).length,
       inProgress: allReports.filter(
-        (r) => r.status === "in_progress" || r.status === "diproses",
+        (r) => r.status === "in_progress" || r.status === "diproses"
       ).length,
       resolved: allReports.filter(
-        (r) => r.status === "resolved" || r.status === "selesai",
+        (r) => r.status === "resolved" || r.status === "selesai"
       ).length,
     };
     setStats(newStats);
@@ -142,7 +142,7 @@ const ManageReports = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: dbStatus }),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -181,7 +181,7 @@ const ManageReports = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -359,7 +359,7 @@ const ManageReports = () => {
                         </span>
                         <span className="font-semibold text-gray-900">
                           {new Date(report.created_at).toLocaleDateString(
-                            "id-ID",
+                            "id-ID"
                           )}
                         </span>
                       </div>

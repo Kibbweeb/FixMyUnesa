@@ -14,16 +14,16 @@ const ModalConfirm = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 overflow-hidden border border-gray-200">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
+        <div className="bg-blue-600 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <FiAlertTriangle className="w-6 h-6 text-white" />
             <h3 className="text-lg font-semibold text-white">{title}</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:text-red-200 transition-colors"
+            className="text-white hover:text-gray-200 transition-colors"
           >
             <FiX className="w-5 h-5" />
           </button>
@@ -44,7 +44,7 @@ const ModalConfirm = ({
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             {confirmText}
           </button>

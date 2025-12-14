@@ -29,12 +29,12 @@ const NavbarAdmin = () => {
   const confirmLogout = async () => {
     try {
       const token = localStorage.getItem("fixmyunesa_token");
-      
+
       // Call backend logout endpoint
       await fetch("http://localhost:8080/api/logout", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -46,14 +46,17 @@ const NavbarAdmin = () => {
       localStorage.removeItem("fixmyunesa_token");
       localStorage.removeItem("fixmyunesa_role");
       localStorage.removeItem("fixmyunesa_user");
-      
+
       navigate("/login");
       setShowLogoutConfirm(false);
     }
   };
 
   return (
-    <div className="flex justify-between items-center p-4 bg-blue-700 text-white">
+    <div
+      className="w-full flex justify-between items-center p-4 bg-blue-700 text-white"
+      style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999 }}
+    >
       <img src={fixmyLogo} alt="FixMyUnesa" className="h-16 w-auto ml-10" />
       {/* Menu Desktop */}
       <ul className="hidden md:flex w-full justify-end mr-4">
@@ -79,9 +82,10 @@ const NavbarAdmin = () => {
       <div
         className={
           nav
-            ? "fixed md:hidden left-0 top-0 w-[300px] h-full border-r border-r-gray-900 bg-blue-700 z-50 ease-in-out duration-500"
+            ? "md:hidden left-0 top-0 w-[300px] h-full border-r border-r-gray-900 bg-blue-700 ease-in-out duration-500"
             : "fixed left-[-100%] md:hidden"
         }
+        style={nav ? { position: "fixed", zIndex: 10000 } : {}}
       >
         <img src={fixmyLogo} alt="FixMyUnesa" className="h-12 w-auto m-8" />
         <ul className="p-4">

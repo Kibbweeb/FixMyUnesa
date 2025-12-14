@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import fixmyLogo from "../assets/fixmy.png";
+import fixmyLogo from "../assets/LOGO.png";
 import ModalConfirm from "../components/ModalConfirm";
 
 const Navbar = () => {
@@ -29,12 +29,12 @@ const Navbar = () => {
   const confirmLogout = async () => {
     try {
       const token = localStorage.getItem("fixmyunesa_token");
-      
+
       // Call backend logout endpoint
       await fetch("http://localhost:8080/api/logout", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -46,15 +46,18 @@ const Navbar = () => {
       localStorage.removeItem("fixmyunesa_token");
       localStorage.removeItem("fixmyunesa_role");
       localStorage.removeItem("fixmyunesa_user");
-      
+
       navigate("/login");
       setShowLogoutConfirm(false);
     }
   };
 
   return (
-    <div className="flex justify-between items-center p-4 bg-blue-700 text-white">
-      <img src={fixmyLogo} alt="FixMyUnesa" className="h-16 w-auto ml-10" />
+    <div
+      className="w-full flex justify-between items-center bg-white text-gray-600 font-bold border-b"
+      style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999 }}
+    >
+      <img src={fixmyLogo} alt="FixMyUnesa" className="h-24 w-auto ml-10" />
       <ul className="hidden md:flex w-full justify-end mr-4">
         <li className="p-4">
           <Link to="/home">Home</Link>
@@ -63,19 +66,13 @@ const Navbar = () => {
           <Link to="/report">Report</Link>
         </li>
         <li className="p-4">
-          <Link to="/report-list">ReportList</Link>
-        </li>
-        <li className="p-4">
           <Link to="/myreports">MyReports</Link>
         </li>
         <li className="p-4">
           <Link to="/profile">Profile</Link>
         </li>
         <li className="p-4">
-          <button
-            onClick={handleLogout}
-            className="text-white hover:text-gray-200"
-          >
+          <button onClick={handleLogout} className="text-gray-600 font-bold">
             Logout
           </button>
         </li>
@@ -86,11 +83,12 @@ const Navbar = () => {
       <div
         className={
           nav
-            ? "fixed md:hidden left-0 top-0  w-[300px] h-full border-r border-r-gray-900 bg-blue-700 z-50 ease-in-out duration-500"
+            ? "md:hidden left-0 top-0  w-[300px] h-full border-r border-r-gray-200 bg-white z-50 ease-in-out duration-500"
             : "fixed left-[-100%] md:hidden"
         }
+        style={nav ? { position: "fixed", zIndex: 10000 } : {}}
       >
-        <img src={fixmyLogo} alt="FixMyUnesa" className="h-12 w-auto m-8" />
+        <img src={fixmyLogo} alt="FixMyUnesa" className="h-24 w-auto m-8" />
         <ul className="p-4">
           <li className="p-4 border-b">
             <Link to="/home" onClick={closeNav}>
@@ -100,11 +98,6 @@ const Navbar = () => {
           <li className="p-4 border-b">
             <Link to="/report" onClick={closeNav}>
               Report
-            </Link>
-          </li>
-          <li className="p-4 border-b">
-            <Link to="/report-list" onClick={closeNav}>
-              ReportList
             </Link>
           </li>
           <li className="p-4 border-b">

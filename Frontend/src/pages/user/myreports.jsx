@@ -220,21 +220,21 @@ const MyReports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div className="mb-4 md:mb-0">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-black mb-2">
               Laporan Saya
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 font-semibold text-lg">
               Kelola semua laporan yang Anda buat
             </p>
           </div>
           <Link
             to="/report"
-            className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+            className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
           >
             <FiPlusCircle className="w-5 h-5" />
             <span>Buat Laporan</span>
@@ -268,7 +268,7 @@ const MyReports = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none bg-white"
+                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200 appearance-none bg-white"
               >
                 <option value="all">Semua Status</option>
                 <option value="pending">Pending</option>
@@ -282,23 +282,23 @@ const MyReports = () => {
         {/* Reports Grid */}
         {filteredReports.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center border border-gray-100">
-            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FiPlusCircle className="w-12 h-12 text-blue-600" />
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <FiPlusCircle className="w-12 h-12 text-blue-400" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            <h3 className="text-2xl font-bold text-black mb-2">
               {searchTerm || filterStatus !== "all"
                 ? "Tidak Ada Hasil"
                 : "Belum Ada Laporan"}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 font-semibold mb-6">
               {searchTerm || filterStatus !== "all"
                 ? "Tidak ada laporan yang sesuai dengan filter Anda"
                 : "Mulai buat laporan untuk melaporkan masalah di kampus"}
             </p>
             {!searchTerm && filterStatus === "all" && (
               <Link
-                to="/create-report"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                to="/report"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               >
                 <FiPlusCircle className="w-5 h-5" />
                 <span>Buat Laporan Pertama</span>
@@ -310,7 +310,7 @@ const MyReports = () => {
             <div className="mb-4">
               <p className="text-gray-600">
                 Menampilkan{" "}
-                <span className="font-semibold text-blue-600">
+                <span className="font-semibold text-black">
                   {filteredReports.length}
                 </span>{" "}
                 dari <span className="font-semibold">{reports.length}</span>{" "}
@@ -354,13 +354,13 @@ const MyReports = () => {
                     </p>
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-500">Kategori:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-gray-600">Kategori:</span>
+                        <span className="font-semibold text-black">
                           {report.category}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-500">Prioritas:</span>
+                        <span className="text-gray-600">Prioritas:</span>
                         <span
                           className={`font-semibold capitalize ${getPriorityColor(
                             report.priority || "medium"
@@ -370,14 +370,14 @@ const MyReports = () => {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-500">Lokasi:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-gray-600">Lokasi:</span>
+                        <span className="font-semibold text-black">
                           {report.location}
                         </span>
                       </div>
                       <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                        <span className="text-gray-500">Dibuat:</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-gray-600">Dibuat:</span>
+                        <span className="font-semibold text-black">
                           {new Date(report.created_at).toLocaleDateString(
                             "id-ID"
                           )}

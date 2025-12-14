@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 // User Pages
 import Home from "./pages/user/home";
 import Report from "./pages/user/report";
-import ReportList from "./pages/user/reportlist";
+// import ReportList from "./pages/user/reportlist";
 import MyReports from "./pages/user/myreports";
 import Profile from "./pages/user/profile";
 
@@ -120,7 +120,7 @@ function App() {
           path="/reportlist"
           element={
             <ProtectedRoute requiredRole="user">
-              <ReportList />
+              {/* <ReportList /> */}
             </ProtectedRoute>
           }
         />

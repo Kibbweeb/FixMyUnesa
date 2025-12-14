@@ -142,13 +142,13 @@ const Report = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white pt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-black mb-2">
             Buat Laporan Baru
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 font-semibold text-lg">
             Laporkan masalah atau kerusakan fasilitas kampus
           </p>
         </div>
@@ -159,7 +159,7 @@ const Report = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* TITLE */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-600 mb-2">
                 Judul Laporan <span className="text-red-500">*</span>
               </label>
               <input
@@ -168,14 +168,14 @@ const Report = () => {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-xl"
-                placeholder="Contoh: Kursi Rusak di Ruang A301"
+                placeholder="Contoh: Kursi Rusak di Ruang A10.01.17"
                 required
               />
             </div>
 
             {/* DESCRIPTION */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-600 mb-2">
                 Deskripsi <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -192,7 +192,7 @@ const Report = () => {
             <div className="grid md:grid-cols-2 gap-6">
               {/* CATEGORY FIXED */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-600 mb-2">
                   Kategori <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -213,7 +213,7 @@ const Report = () => {
 
               {/* PRIORITY */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-600 mb-2">
                   Prioritas <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -232,7 +232,7 @@ const Report = () => {
 
             {/* LOCATION */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-600 mb-2">
                 Lokasi <span className="text-red-500">*</span>
               </label>
               <input
@@ -241,14 +241,14 @@ const Report = () => {
                 value={formData.location}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-xl"
-                placeholder="Contoh: Gedung A Lt. 3"
+                placeholder="Contoh: Gedung A10.01.17"
                 required
               />
             </div>
 
             {/* IMAGE UPLOAD */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-600 mb-2">
                 Foto (Opsional)
               </label>
 
@@ -259,7 +259,7 @@ const Report = () => {
                     <span className="font-semibold">Click to upload</span> atau
                     drag and drop
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-600 mt-1">
                     JPG, JPEG, atau PNG (Max. 10MB)
                   </p>
                   <input
@@ -278,7 +278,7 @@ const Report = () => {
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-lg"
+                    className="absolute top-3 right-3 bg-red-600 text-white p-2 rounded-lg"
                   >
                     <FiX />
                   </button>
@@ -291,7 +291,7 @@ const Report = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-blue-700 text-white py-4 rounded-xl"
+                className="flex-1 bg-blue-500 text-white py-4 rounded-xl"
               >
                 {isSubmitting ? "Mengirim..." : "Kirim Laporan"}
               </button>
@@ -299,7 +299,7 @@ const Report = () => {
               <button
                 type="button"
                 onClick={() => navigate("/my-reports")}
-                className="px-8 py-4 bg-gray-200 rounded-xl"
+                className="px-8 py-4 bg-white rounded-xl shadow-lg"
               >
                 Batal
               </button>
