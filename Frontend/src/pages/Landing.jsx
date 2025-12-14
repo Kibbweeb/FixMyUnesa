@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import {
   FiCheckCircle,
   FiBell,
@@ -18,6 +19,16 @@ import fixmyLogo from "../assets/LOGO.png";
 import kampusImage from "../assets/kampus.webp";
 
 const Landing = () => {
+  const [nav, setNav] = useState(false);
+
+  const handleNav = () => {
+    setNav(!nav);
+  };
+
+  const closeNav = () => {
+    setNav(false);
+  };
+
   const features = [
     {
       icon: FiCheckCircle,
@@ -81,6 +92,60 @@ const Landing = () => {
         <Link
           to="/register"
           className="px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition flex justify-end items-center"
+        >
+          Daftar
+        </Link>
+      </li>
+    </ul>
+
+    {/* Hamburger Button - Mobile */}
+    <div onClick={handleNav} className="block md:hidden mr-6">
+      {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
+    </div>
+  </div>
+
+  {/* Mobile Menu */}
+  <div
+    className={
+      nav
+        ? "md:hidden left-0 top-24 w-[300px] border-r border-r-gray-200 bg-white z-50 ease-in-out duration-500"
+        : "fixed left-[-100%] md:hidden"
+    }
+    style={nav ? { position: "fixed", zIndex: 10000 } : {}}
+  >
+    <ul className="p-4">
+      <li className="p-4 border-b">
+        <a href="#" onClick={closeNav} className="hover:text-blue-500">Home</a>
+      </li>
+      <li className="p-4 border-b">
+        <a href="#alur" onClick={closeNav} className="hover:text-blue-500">Alur</a>
+      </li>
+      <li className="p-4 border-b">
+        <a href="#fitur" onClick={closeNav} className="hover:text-blue-500">Fitur</a>
+      </li>
+      <li className="p-4 border-b">
+        <a href="#tentang" onClick={closeNav} className="hover:text-blue-500">Tentang</a>
+      </li>
+      <li className="p-4 border-b">
+        <a href="#faq" onClick={closeNav} className="hover:text-blue-500">FAQ</a>
+      </li>
+      <li className="p-4 border-b">
+        <a href="#kontak" onClick={closeNav} className="hover:text-blue-500">Kontak</a>
+      </li>
+      <li className="p-4 border-b">
+        <Link
+          to="/login"
+          onClick={closeNav}
+          className="block px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-center"
+        >
+          Masuk
+        </Link>
+      </li>
+      <li className="p-4">
+        <Link
+          to="/register"
+          onClick={closeNav}
+          className="block px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition text-center"
         >
           Daftar
         </Link>
