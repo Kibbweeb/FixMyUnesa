@@ -43,6 +43,7 @@ CREATE TABLE reports (
     location VARCHAR(255),
     priority VARCHAR(50) DEFAULT 'medium',
     status VARCHAR(50) DEFAULT 'menunggu',
+    is_notified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     pict_path TEXT,

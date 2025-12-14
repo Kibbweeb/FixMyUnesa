@@ -64,6 +64,33 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 	})
 }
 
+func (h *AuthHandler) UpdateProfileHandler(c *gin.Context) {
+	userIdClaim, exists := c.Get("id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userId := userIdClaim.(int64)
+
+	var req models.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedUser, err := h.UserService.UpdateProfile(userId, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "Profil berhail diperbarui",
+		"data":    updatedUser,
+	})
+}
+
 func (h *AuthHandler) LogoutHandler(c *gin.Context) {
 	userIdClaim, exists := c.Get("id")
 	if !exists {
