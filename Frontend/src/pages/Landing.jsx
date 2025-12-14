@@ -168,10 +168,8 @@ const Landing = () => {
 
           <p className="text-lg md:text-2xl text-gray-100 max-w-4xl mx-auto leading-relaxed mb-12">
             FixMyUnesa adalah platform pelaporan digital yang dirancang untuk
-            membantu civitas akademika Universitas Negeri Surabaya dalam
-            melaporkan, memantau, dan memastikan tindak lanjut atas kerusakan
-            maupun permasalahan fasilitas kampus secara terstruktur, transparan,
-            dan berkelanjutan.
+            memfasilitasi pelaporan keluhan, aspirasi, dan masalah infrakstruktur di lingkungan kampus secara terstruktur, transparan,
+            dan berkelanjutan untuk membantu civitas akademika Universitas Negeri Surabaya.
           </p>
 
           <Link
