@@ -128,10 +128,13 @@ const MyReports = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
+      case "menunggu":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "in_progress":
+      case "proses":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "resolved":
+      case "selesai":
         return "bg-green-100 text-green-800 border-green-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
@@ -141,11 +144,14 @@ const MyReports = () => {
   const getStatusLabel = (status) => {
     switch (status) {
       case "pending":
-        return "Pending";
+      case "menunggu":
+        return "Menunggu";
       case "in_progress":
-        return "In Progress";
+      case "proses":
+        return "Proses";
       case "resolved":
-        return "Resolved";
+      case "selesai":
+        return "Selesai";
       default:
         return status;
     }
@@ -165,8 +171,15 @@ const MyReports = () => {
   };
 
   const filteredReports = reports.filter((report) => {
+    const rStatus = report.status || "";
+    
+    let targetFilter = filterStatus;
+    if (filterStatus === "pending") targetFilter = "menunggu";
+    if (filterStatus === "in_progress") targetFilter = "proses";
+    if (filterStatus === "resolved") targetFilter = "selesai";
+    
     const matchesStatus =
-      filterStatus === "all" || report.status === filterStatus;
+      filterStatus === "all" || rStatus === targetFilter || rStatus === filterStatus;
     const matchesSearch =
       report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -269,9 +282,9 @@ const MyReports = () => {
                 className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200 appearance-none bg-white"
               >
                 <option value="all">Semua Status</option>
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="resolved">Resolved</option>
+                <option value="menunggu">Menunggu</option>
+                <option value="proses">Proses</option>
+                <option value="selesai">Selesai</option>
               </select>
             </div>
           </div>
@@ -319,7 +332,7 @@ const MyReports = () => {
               {filteredReports.map((report) => (
                 <div
                   key={report.id}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 "
                 >
                   <div className="relative overflow-hidden">
                     {report.pict_path ? (

@@ -218,7 +218,7 @@ const UserHome = () => {
             return (
               <div
                 key={index}
-                className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -319,13 +319,19 @@ const UserHome = () => {
                   key={report.id}
                   className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 hover:border-blue-300 flex"
                 >
-                  {report.pict_path && (
-                    <img
-                      src={`http://localhost:8080/${report.pict_path}`}
-                      alt={report.title}
-                      className="w-24 h-24 object-cover flex-shrink-0"
-                    />
-                  )}
+                  <div className="w-24 h-24 flex-shrink-0 overflow-hidden bg-gray-100">
+                    {report.pict_path ? (
+                      <img
+                        src={`http://localhost:8080/${report.pict_path}`}
+                        alt={report.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                        <TbReport className="text-white text-3xl opacity-80" />
+                      </div>
+                    )}
+                  </div>
                   <div className="p-5 flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="text-lg font-bold text-gray-900">
